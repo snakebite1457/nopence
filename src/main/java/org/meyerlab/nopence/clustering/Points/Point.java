@@ -12,14 +12,12 @@ public class Point {
     public long Id;
     public Map<Integer, Double> Values;
 
-    public Point(Map<Integer, Double> values) {
+    public Point(Map<Integer, Double> values, long id) {
         Values = HashIntDoubleMaps.newMutableMap(values);
+        Id = id;
     }
 
     public Point copy() {
-        Point newPoint = new Point(Values);
-        newPoint.Id = Id;
-
-        return newPoint;
+        return new Point(Values, Id);
     }
 }

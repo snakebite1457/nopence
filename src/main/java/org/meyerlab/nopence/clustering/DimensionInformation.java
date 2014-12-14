@@ -11,35 +11,28 @@ import java.util.Map;
  */
 public class DimensionInformation {
 
-    public enum DimensionType {
-        NOMINAL(1), ORDINAL(2), NUMERIC(3);
-
-        private int numVal;
-
-        DimensionType(int numVal) {
-            this.numVal = numVal;
-        }
-
-        public int getNumVal() {
-            return numVal;
-        }
-    }
-
-    public Map<Integer, Integer> DimensionType;
+    public Map<Integer, Integer> DimensionTypeMapping;
 
     public Map<Integer, List<Integer>> OrdinalTypeMapping;
 
-    public void init(Map<Integer, Integer> dimensionType,
-                     Map<Integer, List<Integer>> ordinalTypeMapping) {
-        DimensionType = HashIntIntMaps.newImmutableMap(dimensionType);
+    public DimensionInformation(Map<Integer, Integer> dimensionTypeMapping,
+                                Map<Integer, List<Integer>> ordinalTypeMapping) {
+        DimensionTypeMapping = HashIntIntMaps.newImmutableMap(dimensionTypeMapping);
         OrdinalTypeMapping = HashIntObjMaps.newImmutableMap(ordinalTypeMapping);
     }
 
-    public DimensionInformation copy() {
-        DimensionInformation copy = new DimensionInformation();
-        copy.init(DimensionType, OrdinalTypeMapping);
-
-        return copy;
+    public DimensionInformation(Map<Integer, Integer> dimensionTypeMapping) {
+        DimensionTypeMapping = HashIntIntMaps.newImmutableMap(dimensionTypeMapping);
     }
 
+    public DimensionInformation copy() {
+
+        if (OrdinalTypeMapping != null) {
+            return new DimensionInformation(DimensionTypeMapping, OrdinalTypeMapping);
+        } else {
+            return new DimensionInformation(DimensionTypeMapping);
+        }
+    }
 }
+
+

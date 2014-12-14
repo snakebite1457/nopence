@@ -1,7 +1,7 @@
 package org.meyerlab.nopence.clustering.online.dysc.ConcurencyWorkers;
 
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.Points.Point;
+import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.online.dysc.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.online.dysc.Cluster.FixedCluster;
 import org.meyerlab.nopence.clustering.online.dysc.Cluster.PendingCluster;
@@ -17,16 +17,26 @@ import java.util.stream.Collectors;
 public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
 
     private ClusterHashMap<PendingCluster> _clusterMap;
-    private int _maxPointSize;
+
 
     public APrePendingWorker(IDistanceMeasure distanceMeasure,
                              double epsilonDistance,
-                             int maxClusterSize,
-                             int maxPointSize) {
-        super(distanceMeasure, epsilonDistance, maxClusterSize);
+                             int initMaxClusters,
+                             int initMaxPoints) {
+        super(distanceMeasure, epsilonDistance,
+                initMaxClusters, initMaxPoints);
 
         _clusterMap = new ClusterHashMap<>();
-        _maxPointSize = maxPointSize;
+    }
+
+    @Override
+    public int numPoints() {
+        return _clusterMap.numPoints();
+    }
+
+    @Override
+    public int numClusters() {
+        return _clusterMap.size();
     }
 
     @Override
@@ -68,20 +78,7 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
         updateLimitReached();
     }
 
-    @Override
-    public void updateLimitReached() {
-
-        int pointCount = _clusterMap.values()
-                .stream()
-                .mapToInt(Cluster::numPoints)
-                .sum();
-
-        // Save info if limit is reached for performance reasons
-        _clusterLimitReached = _clusterMap.size() > _maxClusterSize
-                || pointCount > _maxPointSize;
-    }
-
-    public FixedCluster makePendingCluster(long pendingClusterId) {
+    public FixedCluster makeFixedCluster(long pendingClusterId) {
         FixedCluster fixedCluster = _clusterMap.get(pendingClusterId)
                 .transform(_distanceMeasure, _epsilonDistance);
 
@@ -106,7 +103,7 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
             return null;
         }
 
-        return makePendingCluster(pendingCluster.getClusterId());
+        return makeFixedCluster(pendingCluster.getClusterId());
     }
 
     public boolean isEmpty() {
@@ -134,8 +131,8 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
 
         try {
             for (PendingCluster cluster : _clusterMap.values()) {
-                boolean tmp = cluster.addPoint(_distanceMeasure,
-                        _epsilonDistance, _inputEvent.Point);
+                boolean tmp = cluster.addPoint(
+                        _distanceMeasure, _epsilonDistance, _inputEvent.Point);
 
                 if (!pointAdded && tmp) {
                     pointAdded = true;

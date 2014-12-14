@@ -32,4 +32,8 @@ public class WorkerHashMap<E extends APreWorker> extends HashMap<Integer, E> {
                 .orElse(null);
     }
 
+    public E getFirstWorker() {
+        return this.get(0);
+    }
+
 }

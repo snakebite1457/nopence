@@ -23,4 +23,11 @@ public class ClusterHashMap<V extends Cluster> extends HashMap<Long, V> {
 
         return this.entrySet().iterator().next().getValue();
     }
+
+    public int numPoints() {
+        return this.values()
+                .stream()
+                .mapToInt(Cluster::numPoints)
+                .sum();
+    }
 }

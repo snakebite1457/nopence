@@ -2,6 +2,7 @@ package org.meyerlab.nopence.clustering.distanceMeasures;
 
 import net.openhft.koloboke.collect.set.hash.HashIntSets;
 import org.meyerlab.nopence.clustering.DimensionInformation;
+import org.meyerlab.nopence.clustering.DimensionType;
 import org.meyerlab.nopence.clustering.Points.Point;
 
 import java.util.List;
@@ -49,7 +50,10 @@ public class OrdinalHammingDistance implements IDistanceMeasure {
             return distance;
         }
 
-        if (_dimensionInformation.OrdinalTypeMapping.containsKey(curDimension)) {
+        // TODO: Maybe catch if dimension can not be found
+        if (_dimensionInformation.DimensionTypeMapping.get(curDimension) ==
+                DimensionType.ORDINAL.getNumVal()) {
+
             List<Integer> curOrdinalDims =
                     _dimensionInformation.OrdinalTypeMapping.get(curDimension);
 

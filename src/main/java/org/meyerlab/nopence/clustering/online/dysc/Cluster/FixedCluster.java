@@ -1,7 +1,7 @@
 package org.meyerlab.nopence.clustering.online.dysc.Cluster;
 
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.Points.Point;
+import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

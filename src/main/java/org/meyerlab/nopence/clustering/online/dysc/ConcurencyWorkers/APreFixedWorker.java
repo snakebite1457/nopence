@@ -1,7 +1,7 @@
 package org.meyerlab.nopence.clustering.online.dysc.ConcurencyWorkers;
 
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.Points.Point;
+import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.online.dysc.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.online.dysc.Cluster.FixedCluster;
 import org.meyerlab.nopence.clustering.online.dysc.ConcurencyEvents.APreCallbackEvent;
@@ -22,10 +22,22 @@ public class APreFixedWorker extends APreWorker
 
     public APreFixedWorker(IDistanceMeasure distanceMeasure,
                            double epsilonDistance,
-                           int maxClusterSize) {
-        super(distanceMeasure, epsilonDistance, maxClusterSize);
+                           int initMaxClusters,
+                           int initMaxPoints) {
+        super(distanceMeasure, epsilonDistance,
+                initMaxClusters, initMaxPoints);
 
         _clusterMap = new ClusterHashMap<>();
+    }
+
+    @Override
+    public int numPoints() {
+        return _clusterMap.numPoints();
+    }
+
+    @Override
+    public int numClusters() {
+        return _clusterMap.size();
     }
 
     @Override
@@ -51,13 +63,6 @@ public class APreFixedWorker extends APreWorker
     }
 
     @Override
-    public void updateLimitReached() {
-
-        // Save info if limit is reached for performance reasons
-        _clusterLimitReached = _clusterMap.size() > _maxClusterSize;
-    }
-
-    @Override
     public APreCallbackEvent call() throws Exception {
         APreCallbackEvent event =
                 calculateMinDistance(_inputEvent.Point);
@@ -67,14 +72,10 @@ public class APreFixedWorker extends APreWorker
         return event;
     }
 
-    public ClusterHashMap<FixedCluster> getClusterMap() {
-        return _clusterMap;
-    }
-
     private APreCallbackEvent calculateMinDistance(Point state) {
         APreCallbackEvent callBackEvent = new APreCallbackEvent();
 
-        ClusterDistance result  =_clusterMap.values()
+        ClusterDistance result = _clusterMap.values()
                 .stream()
                 .map(cluster ->
                         new ClusterDistance(
@@ -86,7 +87,8 @@ public class APreFixedWorker extends APreWorker
                     @Override
                     public int compare(ClusterDistance o1, ClusterDistance o2) {
                         return Double.compare(o1.Distance, o2.Distance);
-                    }})
+                    }
+                })
                 .orElse(null);
 
         if (result == null) {

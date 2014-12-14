@@ -1,8 +1,8 @@
 package org.meyerlab.nopence.clustering.online.dysc.Cluster;
 
 import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.Points.Point;
+import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class PendingCluster extends Cluster {
                           int maxPendingSize) {
         super(first);
 
-        _recentOutsiders =  HashLongObjMaps.newMutableMap();
+        _recentOutsiders = HashLongObjMaps.newMutableMap();
         _maxPendingSize = maxPendingSize;
     }
 
@@ -76,8 +76,6 @@ public class PendingCluster extends Cluster {
         }
 
         if (pointId == _seedStateId) {
-            System.out.println("Cluster seed removed!");
-            System.out.println("Cluster size: " + numPoints());
             _seedStateId = reassignClusterSeed(distanceMeasure);
         }
     }
@@ -91,16 +89,16 @@ public class PendingCluster extends Cluster {
     @Override
     public boolean addPoint(IDistanceMeasure distanceFunction,
                             double epsilonDistance,
-                            Point state) {
+                            Point point) {
 
         double distanceToSeed = distanceFunction
-                .computeDistance(state, getClusterSeed());
+                .computeDistance(point, getClusterSeed());
 
         if (distanceToSeed < epsilonDistance) {
-            _points.put(state.Id, state);
+            _points.put(point.Id, point);
             return true;
         } else if (distanceToSeed < epsilonDistance * 2) {
-            _recentOutsiders.put(state.Id, state);
+            _recentOutsiders.put(point.Id, point);
         }
 
         return false;

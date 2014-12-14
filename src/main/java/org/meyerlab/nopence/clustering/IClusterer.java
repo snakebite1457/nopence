@@ -12,7 +12,6 @@ import java.util.Map;
 public interface IClusterer {
 
     public void buildClusterer(List<Point> points,
-                               DimensionInformation dimensionInformation,
                                IDistanceMeasure distanceMeasure);
 
     public Map<Long, List<Long>> start();

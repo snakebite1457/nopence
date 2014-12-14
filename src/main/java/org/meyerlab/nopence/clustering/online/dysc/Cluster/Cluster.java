@@ -1,8 +1,8 @@
 package org.meyerlab.nopence.clustering.online.dysc.Cluster;
 
 import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.Points.Point;
+import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
 
 import java.util.List;
 import java.util.Map;
@@ -18,9 +18,10 @@ public abstract class Cluster {
     protected long _clusterId;
 
     public Cluster(Point first) {
+        _points = HashLongObjMaps.newMutableMap();
+
         _seedStateId = first.Id;
         _points.put(_seedStateId, first);
-        _points = HashLongObjMaps.newMutableMap();
     }
 
     public Point getClusterSeed() {
