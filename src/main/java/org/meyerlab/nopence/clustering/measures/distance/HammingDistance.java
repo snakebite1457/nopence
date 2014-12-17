@@ -1,4 +1,4 @@
-package org.meyerlab.nopence.clustering.distanceMeasures;
+package org.meyerlab.nopence.clustering.measures.distance;
 
 import org.meyerlab.nopence.clustering.DimensionInformation;
 import org.meyerlab.nopence.clustering.Points.Point;

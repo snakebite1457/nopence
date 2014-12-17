@@ -1,9 +1,9 @@
-package org.meyerlab.nopence.clustering.online.dysc.ConcurencyWorkers;
+package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers;
 
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
-import org.meyerlab.nopence.clustering.online.dysc.Cluster.Cluster;
-import org.meyerlab.nopence.clustering.online.dysc.ConcurencyEvents.APreInputEvent;
+import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents.APreInputEvent;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;

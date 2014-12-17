@@ -1,4 +1,4 @@
-package org.meyerlab.nopence.clustering.distanceMeasures;
+package org.meyerlab.nopence.clustering.measures.distance;
 
 import net.openhft.koloboke.collect.set.hash.HashIntSets;
 import org.meyerlab.nopence.clustering.DimensionInformation;

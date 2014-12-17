@@ -1,14 +1,16 @@
-package org.meyerlab.nopence.clustering.online.dysc;
+package org.meyerlab.nopence.clustering.algorithms.dysc;
 
 import org.meyerlab.nopence.clustering.IClusterer;
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
-import org.meyerlab.nopence.clustering.online.dysc.Cluster.FixedCluster;
-import org.meyerlab.nopence.clustering.online.dysc.Cluster.PendingCluster;
-import org.meyerlab.nopence.clustering.online.dysc.ConcurencyEvents.APreCallbackEvent;
-import org.meyerlab.nopence.clustering.online.dysc.ConcurencyEvents.APreInputEvent;
-import org.meyerlab.nopence.clustering.online.dysc.ConcurencyWorkers.APreFixedWorker;
-import org.meyerlab.nopence.clustering.online.dysc.ConcurencyWorkers.APrePendingWorker;
+import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.FixedCluster;
+import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.PendingCluster;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents.APreCallbackEvent;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers.APreFixedWorker;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers.APrePendingWorker;
+import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents.APreInputEvent;
+import org.meyerlab.nopence.util.ClusterHashMap;
 import org.meyerlab.nopence.util.WorkerHashMap;
 
 import java.util.*;
@@ -56,8 +58,19 @@ public class Dysc implements IClusterer {
         _distanceMeasure = distanceMeasure;
     }
 
+    public ClusterHashMap<Cluster> getCluster() {
+        ClusterHashMap<Cluster> clusters = new ClusterHashMap<>();
+
+        _fixedWorkers.values()
+                .stream()
+                .forEach(worker
+                        -> worker.getCluster()
+                            .forEach(clusters::addCluster));
+        return clusters;
+    }
+
     @Override
-    public Map<Long, List<Long>> start() {
+    public void start() {
 
         Point firstPoint = _points.poll();
         createPendingWorker(firstPoint);
@@ -92,7 +105,7 @@ public class Dysc implements IClusterer {
             _pendingWorker.remove(pendingWorker.getWorkerId());
         }
 
-        Map<Long, List<Long>> clusterMap = new HashMap<>();
+        /*Map<Long, List<Long>> clusterMap = new HashMap<>();
 
         final long[] clusterCounter = {0};
 
@@ -103,9 +116,9 @@ public class Dysc implements IClusterer {
                         -> worker.getCluster()
                         .forEach(cluster
                                 -> clusterMap.put(clusterCounter[0]++,
-                                cluster.getClusterPoints())));
+                                cluster.getClusterPointIds())));
 
-        return clusterMap;
+        return clusterMap;*/
     }
 
     private boolean runFixedWorker(Point point) {
@@ -211,6 +224,14 @@ public class Dysc implements IClusterer {
                 FixedCluster fixedCluster = penWorker.makeFixedCluster(
                         penWorker.getFullPendingCluster());
 
+                // Check if converted pending cluster still has points
+                List<Point> remainingPoints =  penWorker
+                        .getClusterPoints(fixedCluster.getOldPendingClusterId());
+
+                if (remainingPoints != null) {
+                    _points.addAll(remainingPoints);
+                }
+
                 removePointsFromPendingClusters(fixedCluster);
                 addFixedCluster(fixedCluster);
             }
@@ -275,9 +296,9 @@ public class Dysc implements IClusterer {
         }
 
         if (usedPointCapacity - usedClusterCapacity > 0) {
-            _maxClustersInWorker *= 1 - absDif;
+            _maxClustersInWorker *= 1 - absDif * 0.3;
         } else {
-            _maxPointsInWorker *= 1 - absDif;
+            _maxPointsInWorker *= 1 - absDif * 0.3;
         }
     }
 

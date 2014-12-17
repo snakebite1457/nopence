@@ -1,4 +1,4 @@
-package org.meyerlab.nopence.clustering.online.dysc.ConcurencyEvents;
+package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents;
 
 /**
  * @author Dennis Meyer

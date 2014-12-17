@@ -1,8 +1,8 @@
-package org.meyerlab.nopence.clustering.online.dysc.Cluster;
+package org.meyerlab.nopence.clustering.algorithms.dysc.Cluster;
 
 import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.distanceMeasures.IDistanceMeasure;
+import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 
 import java.util.Map;
 
@@ -26,14 +26,18 @@ public class PendingCluster extends Cluster {
                                   double epsilonDistance) {
 
         // calc new seed
-        long seedId = reassignClusterSeed(distanceMeasure);
+        reassignClusterSeed(distanceMeasure);
 
-        FixedCluster fixedCluster = new FixedCluster(_points.get(seedId));
+        FixedCluster fixedCluster = new FixedCluster(_points.get
+                (_seedStateId), _clusterId);
         _points.values()
                 .stream()
                 .filter(point -> distanceMeasure.computeDistance(fixedCluster
                         .getClusterSeed(), point) < epsilonDistance)
                 .forEach(point -> fixedCluster._points.put(point.Id, point));
+
+        // Remove points
+        removePoints(fixedCluster, distanceMeasure);
 
         _recentOutsiders.values()
                 .stream()
@@ -44,7 +48,8 @@ public class PendingCluster extends Cluster {
         return fixedCluster;
     }
 
-    private long reassignClusterSeed(IDistanceMeasure distanceMeasure) {
+    @Override
+    public void reassignClusterSeed(IDistanceMeasure distanceMeasure) {
         double minDistance = Double.MAX_VALUE;
         long seedId = 0;
 
@@ -60,7 +65,7 @@ public class PendingCluster extends Cluster {
                 seedId = point.Id;
             }
         }
-        return seedId;
+        _seedStateId = seedId;
     }
 
     @Override
@@ -76,7 +81,7 @@ public class PendingCluster extends Cluster {
         }
 
         if (pointId == _seedStateId) {
-            _seedStateId = reassignClusterSeed(distanceMeasure);
+            reassignClusterSeed(distanceMeasure);
         }
     }
 
