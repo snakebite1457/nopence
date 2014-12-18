@@ -16,9 +16,12 @@ public abstract class Cluster {
     protected Map<Long, Point> _points;
     protected long _seedStateId;
     protected long _clusterId;
+    protected double _epsilonDistance;
 
-    public Cluster(Point first) {
+    public Cluster(Point first,
+                   double epsilonDistance) {
         _points = HashLongObjMaps.newMutableMap();
+        _epsilonDistance = epsilonDistance;
 
         _seedStateId = first.Id;
         _points.put(_seedStateId, first);
@@ -33,7 +36,6 @@ public abstract class Cluster {
     }
 
     public abstract boolean addPoint(IDistanceMeasure distanceMeasure,
-                                     double epsilonDistance,
                                      Point point);
 
     public abstract void removePoint(long pointId,
@@ -65,6 +67,19 @@ public abstract class Cluster {
 
     public void addPoint(Point point) {
         _points.put(point.Id, point);
+    }
+
+    public boolean containsPoint(long pointId) {
+        return _points.containsKey(pointId);
+    }
+
+    public boolean hasSeed() {
+        return _points.containsKey(_seedStateId);
+    }
+
+    @Override
+    public int hashCode() {
+        return _points.hashCode();
     }
 
     @Override

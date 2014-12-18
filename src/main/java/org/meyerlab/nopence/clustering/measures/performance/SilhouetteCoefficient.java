@@ -2,8 +2,8 @@ package org.meyerlab.nopence.clustering.measures.performance;
 
 import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.util.ClusterHashMap;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * @author Dennis Meyer
  */
-public class SilhouetteCoefficient implements IPerformanceMeasure{
+public class SilhouetteCoefficient implements IPerformanceMeasure {
 
     private IDistanceMeasure _distanceMeasure;
     private ClusterHashMap<Cluster> _clusters;
@@ -121,7 +121,7 @@ public class SilhouetteCoefficient implements IPerformanceMeasure{
 
     }
 
-    private static class ReassignWorker implements Runnable{
+    private static class ReassignWorker implements Runnable {
 
         private CountDownLatch _doneSignal;
         private Cluster _cluster;

@@ -1,9 +1,9 @@
-package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers;
+package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers;
 
 import org.meyerlab.nopence.clustering.Points.Point;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreInputEvent;
 import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
-import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents.APreInputEvent;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -63,6 +63,8 @@ public abstract class APreWorker {
     public abstract void addCluster(Cluster cluster);
 
     public abstract void addPoint(long clusterId, Point point);
+
+    public abstract boolean containsPoint(long pointId);
 
     public void updateLimitReached() {
         _clusterLimitReached = numClusters() > _maxClusters;

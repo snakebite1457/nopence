@@ -1,10 +1,10 @@
-package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers;
+package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers;
 
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.FixedCluster;
-import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents.APreCallbackEvent;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreCallbackEvent;
+import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.util.ClusterHashMap;
 
 import java.util.Comparator;
@@ -60,6 +60,11 @@ public class APreFixedWorker extends APreWorker
     public void addPoint(long clusterId, Point point) {
         _clusterMap.get(clusterId).addPoint(point);
         updateLimitReached();
+    }
+
+    @Override
+    public boolean containsPoint(long pointId) {
+        return _clusterMap.containsPoint(pointId);
     }
 
     @Override

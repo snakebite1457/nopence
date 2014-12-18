@@ -5,32 +5,33 @@ import org.meyerlab.nopence.clustering.Points.Point;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.FixedCluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.PendingCluster;
-import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents.APreCallbackEvent;
-import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers.APreFixedWorker;
-import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers.APrePendingWorker;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreCallbackEvent;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreInputEvent;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers.APreFixedWorker;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers.APrePendingWorker;
 import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
-import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyEvents.APreInputEvent;
 import org.meyerlab.nopence.util.ClusterHashMap;
 import org.meyerlab.nopence.util.WorkerHashMap;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Dennis Meyer
  */
 public class Dysc implements IClusterer {
 
-    private static Queue<Point> _points;
-    private static IDistanceMeasure _distanceMeasure;
+    private Queue<Point> _points;
+    private IDistanceMeasure _distanceMeasure;
 
-    private static int _maxClustersInWorker;
-    private static int _maxPointsInWorker;
+    private int _maxClustersInWorker;
+    private int _maxPointsInWorker;
 
-    private static WorkerHashMap<APreFixedWorker> _fixedWorkers;
-    private static WorkerHashMap<APrePendingWorker> _pendingWorker;
-    private static double _epsilonSeedRange;
-    private static int _maxPendingClusterSize;
+    private WorkerHashMap<APreFixedWorker> _fixedWorkers;
+    private WorkerHashMap<APrePendingWorker> _pendingWorker;
+    private double _epsilonSeedRange;
+    private int _maxPendingClusterSize;
     private ExecutorService _executorService;
 
     public Dysc(double epsilonSeedRange,
@@ -65,7 +66,7 @@ public class Dysc implements IClusterer {
                 .stream()
                 .forEach(worker
                         -> worker.getCluster()
-                            .forEach(clusters::addCluster));
+                        .forEach(clusters::addCluster));
         return clusters;
     }
 
@@ -74,7 +75,38 @@ public class Dysc implements IClusterer {
 
         Point firstPoint = _points.poll();
         createPendingWorker(firstPoint);
+        processPoints();
 
+        System.out.println("Threads ready");
+
+        Map<Long, Point> pointMap = new HashMap<>();
+        _pendingWorker.values()
+                .forEach(worker -> worker.getCluster()
+                        .forEach(cl -> cl.getClusterPoints()
+                                .forEach(point -> pointMap.put(point.Id, point))));
+
+        try {
+            // When ready make all pending clusters fixed
+            while (!_pendingWorker.isEmpty()) {
+                APrePendingWorker pendingWorker = _pendingWorker.entrySet()
+                        .iterator().next().getValue();
+
+                while (!pendingWorker.isEmpty()) {
+                    makePendingClusterFix(pendingWorker, false);
+
+                    if (!_points.isEmpty()) {
+                        processPoints();
+                    }
+                }
+
+                _pendingWorker.remove(pendingWorker.getWorkerId());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processPoints() {
         // Iterate over all states and call the event handlers
         while (!_points.isEmpty()) {
             Point point = _points.poll();
@@ -84,41 +116,6 @@ public class Dysc implements IClusterer {
             }
             runPendingWorker(point);
         }
-
-        System.out.println("Threads ready");
-
-        // When ready make all pending clusters fixed
-        while (!_pendingWorker.isEmpty()) {
-            APrePendingWorker pendingWorker = _pendingWorker.entrySet()
-                    .iterator().next().getValue();
-
-            while (!pendingWorker.isEmpty()) {
-                FixedCluster fixedCluster = pendingWorker.makeFixedCluster();
-                if (fixedCluster == null) {
-                    continue;
-                }
-
-                removePointsFromPendingClusters(fixedCluster);
-                addFixedCluster(fixedCluster);
-            }
-
-            _pendingWorker.remove(pendingWorker.getWorkerId());
-        }
-
-        /*Map<Long, List<Long>> clusterMap = new HashMap<>();
-
-        final long[] clusterCounter = {0};
-
-        _fixedWorkers
-                .values()
-                .stream()
-                .forEach(worker
-                        -> worker.getCluster()
-                        .forEach(cluster
-                                -> clusterMap.put(clusterCounter[0]++,
-                                cluster.getClusterPointIds())));
-
-        return clusterMap;*/
     }
 
     private boolean runFixedWorker(Point point) {
@@ -133,7 +130,7 @@ public class Dysc implements IClusterer {
         }
 
         try {
-            doneSignal.await(20, TimeUnit.SECONDS);
+            doneSignal.await();
 
             double minDistance = Double.MAX_VALUE;
             long clusterId = -1;
@@ -166,27 +163,23 @@ public class Dysc implements IClusterer {
     private boolean runPendingWorker(Point point) {
         CountDownLatch doneSignal = new CountDownLatch(_pendingWorker.size());
 
-        List<Future<Boolean>> futurePointAdded = new ArrayList<>();
+        List<Future<APreCallbackEvent>> futurePointAdded = new ArrayList<>();
         for (int key : _pendingWorker.keySet()) {
             APrePendingWorker worker = _pendingWorker.get(key);
-
-            Point copiedState = point.copy();
-
-            worker.setInputEvent(new APreInputEvent(copiedState), doneSignal);
+            worker.setInputEvent(new APreInputEvent(point.copy()), doneSignal);
 
             // Add point to all cluster where the distance is smaller then
             // the epsilon distance
             futurePointAdded.add(_executorService.submit(worker));
         }
 
-
         try {
-            doneSignal.await(20, TimeUnit.SECONDS);
+            doneSignal.await();
 
             // Check if point is added to at least one cluster
             boolean added = false;
-            for (Future<Boolean> pointAdded : futurePointAdded) {
-                if (pointAdded.get()) {
+            for (Future<APreCallbackEvent> pointAdded : futurePointAdded) {
+                if (pointAdded.get().pointAdded) {
                     added = true;
                     break;
                 }
@@ -204,36 +197,23 @@ public class Dysc implements IClusterer {
 
                 if (pendingWorker != null) {
                     pendingWorker.addCluster(
-                            new PendingCluster(copiedState, _maxPendingClusterSize));
+                            new PendingCluster(copiedState,
+                                    _epsilonSeedRange,
+                                    _maxPendingClusterSize));
                 } else {
                     createPendingWorker(copiedState);
                 }
             }
 
             // Get clusters where the max pending cluster size are reached
-            while (_pendingWorker.values()
+            APrePendingWorker penWorker;
+            while ((penWorker = _pendingWorker.values()
                     .stream()
                     .filter(APrePendingWorker::hasFullPendingCluster)
-                    .count() > 0) {
+                    .findFirst()
+                    .orElse(null)) != null) {
 
-                APrePendingWorker penWorker = _pendingWorker.values()
-                        .stream()
-                        .filter(APrePendingWorker::hasFullPendingCluster)
-                        .findFirst().get();
-
-                FixedCluster fixedCluster = penWorker.makeFixedCluster(
-                        penWorker.getFullPendingCluster());
-
-                // Check if converted pending cluster still has points
-                List<Point> remainingPoints =  penWorker
-                        .getClusterPoints(fixedCluster.getOldPendingClusterId());
-
-                if (remainingPoints != null) {
-                    _points.addAll(remainingPoints);
-                }
-
-                removePointsFromPendingClusters(fixedCluster);
-                addFixedCluster(fixedCluster);
+                makePendingClusterFix(penWorker, true);
             }
 
         } catch (InterruptedException | ExecutionException e) {
@@ -241,6 +221,32 @@ public class Dysc implements IClusterer {
         }
 
         return false;
+    }
+
+    private void makePendingClusterFix(APrePendingWorker penWorker,
+                                       boolean fullCluster)
+            throws InterruptedException {
+
+        FixedCluster fixedCluster;
+        if (fullCluster) {
+            fixedCluster = penWorker.makeFixedCluster(
+                    penWorker.getFullPendingCluster());
+        } else {
+            fixedCluster = penWorker.makeFixedCluster();
+        }
+
+        // Check if converted pending cluster still has points
+        List<Point> remainingPoints = fixedCluster.remainingPendingPoints();
+
+        if (remainingPoints != null) {
+            removePointsHelper(remainingPoints
+                    .stream()
+                    .collect(Collectors.toList()));
+
+        }
+
+        removePointsFromPendingClusters(fixedCluster.getClusterPointIds());
+        addFixedCluster(fixedCluster);
     }
 
     private void createPendingWorker(Point initialState) {
@@ -255,7 +261,9 @@ public class Dysc implements IClusterer {
                 _maxPointsInWorker);
 
         pendingWorker.addCluster(
-                new PendingCluster(initialState.copy(), _maxPendingClusterSize));
+                new PendingCluster(initialState.copy(),
+                        _epsilonSeedRange,
+                        _maxPendingClusterSize));
 
         _pendingWorker.addWorker(pendingWorker);
     }
@@ -284,9 +292,9 @@ public class Dysc implements IClusterer {
     private void recalculateWorkerSize() {
         APrePendingWorker firstWorker = _pendingWorker.getFirstWorker();
 
-        double usedPointCapacity = (double)_maxPointsInWorker / (double)
+        double usedPointCapacity = (double) _maxPointsInWorker / (double)
                 firstWorker.numPoints();
-        double usedClusterCapacity = (double)_maxClustersInWorker / (double)
+        double usedClusterCapacity = (double) _maxClustersInWorker / (double)
                 firstWorker.numClusters();
 
         double absDif = Math.abs(usedPointCapacity - usedClusterCapacity);
@@ -302,10 +310,46 @@ public class Dysc implements IClusterer {
         }
     }
 
-    private void removePointsFromPendingClusters(FixedCluster fixedCluster) {
-        // TODO: parallelize this
+    private void removePointsFromPendingClusters(List<Long> points)
+            throws InterruptedException {
 
-        _pendingWorker.values()
-                .forEach(worker -> worker.removePoints(fixedCluster));
+        CountDownLatch doneSignal = new CountDownLatch(_pendingWorker.size());
+
+        List<Future<APreCallbackEvent>> callFutures = new ArrayList<>();
+        for (APrePendingWorker worker : _pendingWorker.values()) {
+            APreInputEvent inputEvent = new APreInputEvent(points);
+            worker.setInputEvent(inputEvent, doneSignal);
+            callFutures.add(_executorService.submit(worker));
+        }
+
+        doneSignal.await();
+
+        for (Future<APreCallbackEvent> future : callFutures) {
+            try {
+                if (future.get().PointsWithoutSeed != null
+                        && !future.get().PointsWithoutSeed.isEmpty()) {
+
+                    removePointsHelper(future.get().PointsWithoutSeed);
+                }
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void removePointsHelper(List<Point> points) {
+        points
+            .stream()
+            .filter(point
+                    -> _pendingWorker.values()
+                    .stream()
+                    .filter(worker -> worker.containsPoint(point.Id))
+                    .count() == 0)
+            .forEach(point -> {
+                _pendingWorker.values()
+                        .forEach(worker
+                                -> worker.removeOutsiderPoint(point.Id));
+                _points.add(point);
+            });
     }
 }

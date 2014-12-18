@@ -1,8 +1,8 @@
 package org.meyerlab.nopence.clustering;
 
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.util.ClusterHashMap;
 
 import java.util.List;

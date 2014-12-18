@@ -1,12 +1,14 @@
-package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers;
+package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers;
 
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.FixedCluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.PendingCluster;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreCallbackEvent;
+import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.util.ClusterHashMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -14,10 +16,10 @@ import java.util.stream.Collectors;
 /**
  * @author Dennis Meyer
  */
-public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
+public class APrePendingWorker extends APreWorker
+        implements Callable<APreCallbackEvent> {
 
     private ClusterHashMap<PendingCluster> _clusterMap;
-
 
     public APrePendingWorker(IDistanceMeasure distanceMeasure,
                              double epsilonDistance,
@@ -47,7 +49,7 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
                 .collect(Collectors.toList());
     }
 
-    public List<Point> getClusterPoints(long clusterId){
+    public List<Point> getClusterPoints(long clusterId) {
         if (_clusterMap.containsKey(clusterId)) {
             return _clusterMap.get(clusterId).getClusterPoints();
         }
@@ -69,26 +71,46 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
         updateLimitReached();
     }
 
-    public void removePoints(FixedCluster fixedCluster) {
+    @Override
+    public boolean containsPoint(long pointId) {
+        return _clusterMap.containsPoint(pointId);
+    }
+
+    private List<Point> removePoints(List<Long> pointIds) {
         _clusterMap.values()
                 .forEach(cluster ->
-                        cluster.removePoints(fixedCluster, _distanceMeasure));
+                        cluster.removePoints(pointIds, _distanceMeasure));
+
+        List<Point> pointsWithoutSeed = new ArrayList<>();
+        _clusterMap.values()
+                .stream()
+                .filter(cluster -> !cluster.hasSeed())
+                .forEach(cluster
+                        -> pointsWithoutSeed.addAll(cluster.getClusterPoints()));
 
         // Check empty cluster and remove
         List<Long> emptyClusters = _clusterMap.values()
                 .stream()
-                .filter(cluster -> cluster.numPoints() == 0)
+                .filter(cluster
+                        -> cluster.numPoints() == 0 || !cluster.hasSeed())
                 .map(Cluster::getClusterId)
                 .collect(Collectors.toList());
 
         emptyClusters.forEach(_clusterMap::remove);
 
         updateLimitReached();
+
+        return pointsWithoutSeed;
+    }
+
+    public void removeOutsiderPoint(long pointId) {
+        _clusterMap.values()
+                .forEach(cluster -> cluster.removeOutsiderPoint(pointId));
     }
 
     public FixedCluster makeFixedCluster(long pendingClusterId) {
         FixedCluster fixedCluster = _clusterMap.get(pendingClusterId)
-                .transform(_distanceMeasure, _epsilonDistance);
+                .transform(_distanceMeasure);
 
         _clusterMap.remove(pendingClusterId);
         updateLimitReached();
@@ -101,17 +123,7 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
             return null;
         }
 
-        PendingCluster pendingCluster = _clusterMap.getCluster();
-        while (pendingCluster != null && pendingCluster.numPoints() == 0) {
-            _clusterMap.remove(pendingCluster);
-            pendingCluster = _clusterMap.getCluster();
-        }
-
-        if (pendingCluster == null) {
-            return null;
-        }
-
-        return makeFixedCluster(pendingCluster.getClusterId());
+        return makeFixedCluster(_clusterMap.getCluster().getClusterId());
     }
 
     public boolean isEmpty() {
@@ -134,13 +146,29 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
     }
 
     @Override
-    public Boolean call() throws Exception {
+    public APreCallbackEvent call() throws Exception {
+
+        APreCallbackEvent callbackEvent = new APreCallbackEvent();
+
+        if (_inputEvent.removePoints && _inputEvent.PointIdsToBeRemoved != null) {
+            callbackEvent.PointsWithoutSeed =
+                    removePoints(_inputEvent.PointIdsToBeRemoved);
+        } else {
+            callbackEvent.pointAdded = addPointConcurrency();
+        }
+
+        _doneSignal.countDown();
+
+        return callbackEvent;
+    }
+
+    private Boolean addPointConcurrency() {
         boolean pointAdded = false;
 
         try {
             for (PendingCluster cluster : _clusterMap.values()) {
                 boolean tmp = cluster.addPoint(
-                        _distanceMeasure, _epsilonDistance, _inputEvent.Point);
+                        _distanceMeasure, _inputEvent.Point);
 
                 if (!pointAdded && tmp) {
                     pointAdded = true;
@@ -149,8 +177,6 @@ public class APrePendingWorker extends APreWorker implements Callable<Boolean> {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
-        _doneSignal.countDown();
 
         return pointAdded;
     }

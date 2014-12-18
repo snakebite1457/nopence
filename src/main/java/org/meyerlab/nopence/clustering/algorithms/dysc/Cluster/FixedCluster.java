@@ -4,27 +4,26 @@ import org.meyerlab.nopence.clustering.Points.Point;
 import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.List;
+
 /**
  * @author Dennis Meyer
  */
 public class FixedCluster extends Cluster {
 
-    private long _oldPendingClusterId;
+    private List<Point> _remainingPendingPoints;
 
     public FixedCluster(Point first,
-                        long oldPendingClusterId) {
-        super(first);
-
-        _oldPendingClusterId = oldPendingClusterId;
+                        double epsilonDistance) {
+        super(first, epsilonDistance);
     }
 
     @Override
     public boolean addPoint(IDistanceMeasure distanceMeasure,
-                            double epsilonDistance,
                             Point point) {
 
         if (distanceMeasure.computeDistance(getClusterSeed(), point) <
-                epsilonDistance) {
+                _epsilonDistance) {
 
             _points.put(point.Id, point);
             return true;
@@ -64,7 +63,13 @@ public class FixedCluster extends Cluster {
         throw new NotImplementedException();
     }
 
-    public long getOldPendingClusterId() {
-        return _oldPendingClusterId;
+
+    public List<Point> remainingPendingPoints() {
+        return _remainingPendingPoints;
+    }
+
+    public void setRemainingPendingPoints(
+            List<Point> remainingPendingPoints) {
+        _remainingPendingPoints = remainingPendingPoints;
     }
 }

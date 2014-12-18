@@ -4,7 +4,9 @@ import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
 import org.meyerlab.nopence.clustering.Points.Point;
 import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Dennis Meyer
@@ -15,35 +17,42 @@ public class PendingCluster extends Cluster {
     private int _maxPendingSize;
 
     public PendingCluster(Point first,
+                          double epsilonDistance,
                           int maxPendingSize) {
-        super(first);
+        super(first, epsilonDistance);
 
         _recentOutsiders = HashLongObjMaps.newMutableMap();
         _maxPendingSize = maxPendingSize;
     }
 
-    public FixedCluster transform(IDistanceMeasure distanceMeasure,
-                                  double epsilonDistance) {
+    public FixedCluster transform(IDistanceMeasure distanceMeasure) {
 
         // calc new seed
         reassignClusterSeed(distanceMeasure);
 
         FixedCluster fixedCluster = new FixedCluster(_points.get
-                (_seedStateId), _clusterId);
+                (_seedStateId), _epsilonDistance);
+
         _points.values()
                 .stream()
                 .filter(point -> distanceMeasure.computeDistance(fixedCluster
-                        .getClusterSeed(), point) < epsilonDistance)
+                        .getClusterSeed(), point) < _epsilonDistance)
                 .forEach(point -> fixedCluster._points.put(point.Id, point));
-
-        // Remove points
-        removePoints(fixedCluster, distanceMeasure);
 
         _recentOutsiders.values()
                 .stream()
                 .filter(point -> distanceMeasure.computeDistance(fixedCluster
-                        .getClusterSeed(), point) < epsilonDistance)
+                        .getClusterSeed(), point) < _epsilonDistance)
                 .forEach(point -> fixedCluster._points.put(point.Id, point));
+
+        // Add remaining points which was not inserted to fixed cluster.
+        if (!_points.isEmpty()) {
+            fixedCluster.setRemainingPendingPoints(
+                    _points.values()
+                            .stream()
+                            .filter(point -> !fixedCluster.containsPoint(point.Id))
+                            .collect(Collectors.toList()));
+        }
 
         return fixedCluster;
     }
@@ -51,12 +60,11 @@ public class PendingCluster extends Cluster {
     @Override
     public void reassignClusterSeed(IDistanceMeasure distanceMeasure) {
         double minDistance = Double.MAX_VALUE;
-        long seedId = 0;
+        long seedId = _seedStateId;
 
         for (Point point : _points.values()) {
             double distance = _points.values()
                     .stream()
-                    .filter(p -> p.Id != point.Id)
                     .mapToDouble(p -> distanceMeasure.computeDistance(point, p))
                     .sum();
 
@@ -79,30 +87,32 @@ public class PendingCluster extends Cluster {
         if (_recentOutsiders.containsKey(pointId)) {
             _recentOutsiders.remove(pointId);
         }
-
-        if (pointId == _seedStateId) {
-            reassignClusterSeed(distanceMeasure);
-        }
     }
 
-    public void removePoints(FixedCluster fixedCluster,
+    public void removePoints(List<Long> pointIds,
                              IDistanceMeasure distanceMeasure) {
-        fixedCluster._points.keySet()
-                .forEach(pointId -> removePoint(pointId, distanceMeasure));
+        pointIds.forEach(pointId -> removePoint(pointId, distanceMeasure));
+    }
+
+    public void removeOutsiderPoint(long pointId) {
+        _recentOutsiders.remove(pointId);
     }
 
     @Override
     public boolean addPoint(IDistanceMeasure distanceFunction,
-                            double epsilonDistance,
                             Point point) {
+
+        if (!_points.containsKey(_seedStateId)) {
+            reassignClusterSeed(distanceFunction);
+        }
 
         double distanceToSeed = distanceFunction
                 .computeDistance(point, getClusterSeed());
 
-        if (distanceToSeed < epsilonDistance) {
+        if (distanceToSeed < _epsilonDistance) {
             _points.put(point.Id, point);
             return true;
-        } else if (distanceToSeed < epsilonDistance * 2) {
+        } else if (distanceToSeed < _epsilonDistance * 2) {
             _recentOutsiders.put(point.Id, point);
         }
 

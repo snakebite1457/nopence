@@ -30,4 +30,11 @@ public class ClusterHashMap<V extends Cluster> extends HashMap<Long, V> {
                 .mapToInt(Cluster::numPoints)
                 .sum();
     }
+
+    public boolean containsPoint(long pointId) {
+        return this.values()
+                .stream()
+                .filter(cluster -> cluster.containsPoint(pointId))
+                .count() > 0;
+    }
 }

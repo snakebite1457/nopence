@@ -1,6 +1,6 @@
 package org.meyerlab.nopence.util;
 
-import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurencyWorkers.APreWorker;
+import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers.APreWorker;
 
 import java.util.HashMap;
 
