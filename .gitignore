@@ -75,3 +75,5 @@ crashlytics-build.properties
 
 
 src/test/resources
+jm-prta-parser/src/main/resources
+clustering/src/test/resources
