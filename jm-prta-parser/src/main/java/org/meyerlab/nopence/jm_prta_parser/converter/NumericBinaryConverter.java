@@ -21,7 +21,7 @@ public class NumericBinaryConverter extends Converter {
      * value -> list of new id's in case of ordinal
      */
     private Map<Integer, List<Integer>> _attrMapping;
-
+    private OrdinalMapping _ordinalMapping;
 
     private NumericAttribute _numericAttribute;
 
@@ -38,6 +38,22 @@ public class NumericBinaryConverter extends Converter {
         }
     }
 
+    public NumericBinaryConverter(NumericAttribute numericAttribute,
+                                  IntGenerator intGenerator,
+                                  OrdinalMapping ordinalMapping) {
+        _numericAttribute = numericAttribute;
+        _attrMapping = new HashMap<>();
+        _intGenerator = intGenerator;
+        _ordinalMapping = ordinalMapping;
+
+        try {
+            convert();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void convert() throws Exception {
         int numberOfBins = _numericAttribute.getNumDiscretizationBins();
 
@@ -45,31 +61,47 @@ public class NumericBinaryConverter extends Converter {
         binValues.add(0, "Inactive");
         binValues.add(1, "Active");
 
-        for (int i = 0; i < numberOfBins; i++) {
-            double[] borders = _numericAttribute.getBorder(i);
-
-            int newAttrId = _intGenerator.getNext();
-            String newAttrName = new StringBuilder(_numericAttribute.getName())
-                    .append(" ").append(borders[0])
-                    .append(" - ").append(borders[1]).toString();
-
-            List<Integer> mappedAttrIds = new ArrayList<>();
-            mappedAttrIds.add(newAttrId);
-
-            // In case of ordinal attribute after discretization
-            if (_numericAttribute.getConvertedType() ==
-                    Attribute.Type.ordinal && i != 0) {
-
-                // It is guaranteed that the borders are ordered from - to +
-                mappedAttrIds.addAll(_attrMapping.get(i - 1));
+        if (_numericAttribute.getConvertedType() != Attribute.Type.ordinal
+                || _ordinalMapping == OrdinalMapping.normal) {
+            for (int i = 0; i < numberOfBins; i++) {
+                createBinaryAttr(binValues, i);
             }
-
-            _attrMapping.put(i, mappedAttrIds);
-
-            convertedAttrs.put(newAttrId, new BinaryAttribute(newAttrId, newAttrName,
-                    binValues, _numericAttribute.getConvertedType()));
-            originalAttrTypeByConvertedId.put(newAttrId, _numericAttribute);
+        } else if (_ordinalMapping == OrdinalMapping.reverse) {
+            for (int i = numberOfBins - 1; i >= 0; i--) {
+                createBinaryAttr(binValues, i);
+            }
         }
+    }
+
+    private void createBinaryAttr(List<String> binValues, int i) throws Exception {
+        double[] borders = _numericAttribute.getBorder(i);
+
+        int newAttrId = _intGenerator.getNext();
+        String newAttrName = new StringBuilder(_numericAttribute.getName())
+                .append(" ").append(borders[0])
+                .append(" - ").append(borders[1]).toString();
+
+        List<Integer> mappedAttrIds = new ArrayList<>();
+        mappedAttrIds.add(newAttrId);
+
+        // In case of ordinal attribute after discretization
+        if (_numericAttribute.getConvertedType() == Attribute.Type.ordinal) {
+
+            int lastOrdinalPosition = _ordinalMapping == OrdinalMapping.normal
+                    ? i - 1
+                    : i + 1;
+
+            if (_attrMapping.containsKey(lastOrdinalPosition)) {
+                // It is guaranteed that the borders are ordered from - to +
+                mappedAttrIds.addAll(_attrMapping.get(lastOrdinalPosition));
+            }
+        }
+
+        _attrMapping.put(i, mappedAttrIds);
+
+        convertedAttrs.put(newAttrId, new BinaryAttribute(newAttrId, newAttrName,
+                binValues, _numericAttribute.getConvertedType()));
+        originalAttrTypeByConvertedId.put(newAttrId, _numericAttribute);
     }
 
     @Override
@@ -77,7 +109,7 @@ public class NumericBinaryConverter extends Converter {
             throws AttrNotContainsValueException {
 
         int bin = _numericAttribute.getBinByValue(value);
-        List<Integer> convertedBinAttrIds = _attrMapping.get(bin);
+        List<Integer> convertedBinAttrIds = _attrMapping.get(bin - 1);
 
         List<Attribute> curConvertedAttrs = new ArrayList<>();
         convertedBinAttrIds.forEach(id ->
@@ -91,4 +123,8 @@ public class NumericBinaryConverter extends Converter {
         return _numericAttribute;
     }
 
+
+    public enum OrdinalMapping{
+        normal, reverse
+    }
 }

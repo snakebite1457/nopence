@@ -79,7 +79,7 @@ public class NumericAttribute extends Attribute {
      * @return the bin number which contains the given value
      */
     public int getBinByValue(double value) {
-        return IntStream.range(0, _discretization.getNumberOfBins())
+        return IntStream.range(0, _discretization.getNumberOfBins() + 1)
                 .filter(a -> _discretization.getBorder(a) >= value)
                 .findFirst().getAsInt();
     }

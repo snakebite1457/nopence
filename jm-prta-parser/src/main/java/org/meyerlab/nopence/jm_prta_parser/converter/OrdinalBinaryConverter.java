@@ -1,15 +1,13 @@
 package org.meyerlab.nopence.jm_prta_parser.converter;
 
+import net.openhft.koloboke.collect.map.hash.HashIntDoubleMaps;
 import org.meyerlab.nopence.jm_prta_parser.attributes.Attribute;
 import org.meyerlab.nopence.jm_prta_parser.attributes.BinaryAttribute;
 import org.meyerlab.nopence.jm_prta_parser.attributes.OrdinalAttribute;
 import org.meyerlab.nopence.jm_prta_parser.util.IntGenerator;
 import org.meyerlab.nopence.jm_prta_parser.util.exceptions.AttrNotContainsValueException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,18 +17,26 @@ public class OrdinalBinaryConverter extends Converter {
 
     private OrdinalAttribute _ordinalAttr;
     private Map<Double, List<Integer>> _attrMapping;
+    private Map<Integer, Double> _ordinalOrder;
 
     public OrdinalBinaryConverter(OrdinalAttribute ordinalAttribute,
-                                  IntGenerator intGenerator) {
+                                  IntGenerator intGenerator,
+                                  Map<Integer, Double> ordinalOrder) {
         _ordinalAttr = ordinalAttribute;
         _attrMapping = new HashMap<>();
         _intGenerator = intGenerator;
+        _ordinalOrder = HashIntDoubleMaps.newImmutableMap(ordinalOrder);
         convert();
     }
 
     private void convert() {
-        Map<Double, String> values = _ordinalAttr.getValues();
-        values.forEach(this::addValueToConvertedAttr);
+        HashMap<Double, String> values = new HashMap<>(_ordinalAttr.getValues());
+        _ordinalOrder
+                .entrySet()
+                .stream()
+                .sorted((o1, o2) -> Double.compare(o1.getKey(), o2.getKey()))
+                .forEach(entry -> this.addValueToConvertedAttr(entry.getValue()
+                        , values.get(entry.getValue())));
     }
 
     private void addValueToConvertedAttr(double ordinalNumber,

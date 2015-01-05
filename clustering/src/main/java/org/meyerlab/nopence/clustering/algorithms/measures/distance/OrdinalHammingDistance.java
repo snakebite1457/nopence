@@ -23,6 +23,8 @@ public class OrdinalHammingDistance implements IDistanceMeasure {
 
     @Override
     public double computeDistance(Point first, Point second) {
+        _checkedDimensions.clear();
+
         double distance = 0;
 
         // Check if attr in v1 also contains in v2
@@ -82,10 +84,10 @@ public class OrdinalHammingDistance implements IDistanceMeasure {
 
             curOrdinalDims.forEach(_checkedDimensions::add);
 
-        } else if (first.Values.containsKey(curDimension)
-                && !second.Values.containsKey(curDimension)
-                || !first.Values.containsKey(curDimension)
-                && second.Values.containsKey(curDimension)) {
+        } else if ((first.Values.containsKey(curDimension)
+                && !second.Values.containsKey(curDimension))
+                || (!first.Values.containsKey(curDimension)
+                && second.Values.containsKey(curDimension))) {
             // Variable occur either in event 1 or in event 2
             distance++;
         }

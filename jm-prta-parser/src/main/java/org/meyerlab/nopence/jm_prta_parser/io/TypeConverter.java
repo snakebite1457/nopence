@@ -1,6 +1,7 @@
 package org.meyerlab.nopence.jm_prta_parser.io;
 
 
+import moa.recommender.rc.utils.Hash;
 import org.kramerlab.carbon.util.discretization.Discretization;
 import org.kramerlab.carbon.util.discretization.DiscretizationType;
 
@@ -71,6 +72,8 @@ public class TypeConverter {
                 .getElementsByTagName(Constants.ATTR_INFO_ATTR_ROOT);
 
         ArrayList<NumericAttribute> numAttrList = new ArrayList<>();
+        HashMap<Integer, NumericBinaryConverter.OrdinalMapping> numAttrOrdinalMapping = new HashMap<>();
+
         for (int i = 0; i < nodeList.getLength(); i++) {
             NamedNodeMap nodeAttrs = nodeList.item(i).getAttributes();
 
@@ -90,12 +93,15 @@ public class TypeConverter {
 
             switch (Attribute.Type.valueOf(curAttrType)) {
                 case ordinal:
-                    valueMap = getValues(nodeList.item(i));
+                    HashMap<Integer, Double> ordinalOrder = new HashMap<>();
+
+                    valueMap = getValues(nodeList.item(i), true, ordinalOrder);
                     currentAttr = new OrdinalAttribute(id, name,
                             valueMap, Attribute.Type.ordinal);
 
                     converter = new OrdinalBinaryConverter(
-                            (OrdinalAttribute) currentAttr, _intGenerator);
+                            (OrdinalAttribute) currentAttr,
+                            _intGenerator, ordinalOrder);
                     break;
                 case numeric:
                     Attribute.Type afterDisType =
@@ -108,11 +114,20 @@ public class TypeConverter {
                             Integer.parseInt(nodeAttrs.getNamedItem(
                                     Constants.ATTR_INFO_VAL_NODE_NUMTYPE_BINS).getNodeValue());
 
+                    if (afterDisType == Attribute.Type.ordinal) {
+                        NumericBinaryConverter.OrdinalMapping ordinalMapping =
+                                NumericBinaryConverter.OrdinalMapping
+                                        .valueOf(nodeAttrs.getNamedItem(
+                                                Constants.ATTR_INFO_VAL_NODE_NUMTYPE_ORDINALORDER).getNodeValue());
+
+                        numAttrOrdinalMapping.put(id, ordinalMapping);
+                    }
+
                     numAttrList.add(new NumericAttribute(id, name,
                             disType, numberOfBins, afterDisType));
                     continue;
                 case nominal:
-                    valueMap = getValues(nodeList.item(i));
+                    valueMap = getValues(nodeList.item(i), false, null);
                     currentAttr = new NominalAttribute(id, name,
                             valueMap, Attribute.Type.nominal);
                     converter =
@@ -128,8 +143,16 @@ public class TypeConverter {
         // Read out the numAttrList and create the discretization for all
         // these numeric attributes. And then create the converter.
         setDiscretizationToAttrs(numAttrList);
-        numAttrList.forEach(attr -> _converterAttrIdMap.put(attr.getId(),
-                new NumericBinaryConverter(attr, _intGenerator)));
+        numAttrList.forEach(attr -> {
+            if (attr.getConvertedType() == Attribute.Type.ordinal) {
+                _converterAttrIdMap.put(attr.getId(),
+                        new NumericBinaryConverter(attr, _intGenerator,
+                                numAttrOrdinalMapping.get(attr.getId())));
+            } else {
+                _converterAttrIdMap.put(attr.getId(),
+                        new NumericBinaryConverter(attr, _intGenerator));
+            }
+        });
     }
 
     /**
@@ -195,7 +218,8 @@ public class TypeConverter {
         _intGenerator = new IntGenerator();
     }
 
-    private HashMap<Double, String> getValues(Node node) {
+    private HashMap<Double, String> getValues(
+            Node node, boolean ordinal, HashMap<Integer, Double> ordinalOrder) {
 
         HashMap<Double, String> valueMap = new HashMap<>();
         NodeList values = node.getChildNodes();
@@ -212,12 +236,19 @@ public class TypeConverter {
                 continue;
             }
 
-            double ordinalNumber = Double.parseDouble(values.item(i)
+            double valueNumber = Double.parseDouble(values.item(i)
                     .getAttributes().getNamedItem(Constants.ATTR_INFO_VAL_NODE_NUM).getNodeValue());
             String valueName = values.item(i).getAttributes().getNamedItem
                     (Constants.ATTR_INFO_VAL_NODE_NAME).getNodeValue();
 
-            valueMap.put(ordinalNumber, valueName);
+            valueMap.put(valueNumber, valueName);
+
+            if (ordinal) {
+                int oPosition = Integer.parseInt(values.item(i)
+                        .getAttributes().getNamedItem(Constants.ATTR_INFO_VAL_NODE_OPOSITION)
+                        .getNodeValue());
+                ordinalOrder.put(oPosition, valueNumber);
+            }
         }
         return valueMap;
     }

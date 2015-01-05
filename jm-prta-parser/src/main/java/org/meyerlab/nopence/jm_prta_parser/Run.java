@@ -110,7 +110,7 @@ public class Run {
         int parserSize = dataParserList.size();
         ExecutorService executorService = Executors.newFixedThreadPool(5);
 
-        // Create the parser worker once and reset the for every line
+        // Create the parser workers once and reset it for every line
         ArrayList<ParseWorker> parseWorkers = new ArrayList<>(parserSize);
         dataParserList.forEach(parser -> parseWorkers.add(new ParseWorker(parser)));
 

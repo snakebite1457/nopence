@@ -17,10 +17,12 @@ public class Constants {
     public static final String ATTR_INFO_VAL_ROOT = "value";
     public static final String ATTR_INFO_VAL_NODE_NUM = "number";
     public static final String ATTR_INFO_VAL_NODE_NAME = "name";
+    public static final String ATTR_INFO_VAL_NODE_OPOSITION = "oPosition";
 
     public static final String ATTR_INFO_VAL_NODE_NUMTYPE_AFTERTYPE = "afterDiscretizationType";
     public static final String ATTR_INFO_VAL_NODE_NUMTYPE_DISTYPE = "discretizationType";
     public static final String ATTR_INFO_VAL_NODE_NUMTYPE_BINS = "discretizationNumberBins";
+    public static final String ATTR_INFO_VAL_NODE_NUMTYPE_ORDINALORDER = "ordinalOrder";
 
     public static final String VAR_HIST_ELEMENT_VAR_ID = "VarID";
     public static final String VAR_HIST_ELEMENT_LABEL_SHORT = "LabelShort";
