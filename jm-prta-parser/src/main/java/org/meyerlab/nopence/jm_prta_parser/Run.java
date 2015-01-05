@@ -83,16 +83,16 @@ public class Run {
         String line = br.readLine();
 
         System.out.println("Begin parse operation");
-        int processCounter = 0;
+        int processCounter = 1; // Header
         int overallInstances = Option.getInstance().getInstFileLineCount();
         while ((line = br.readLine()) != null) {
             String[] splittedLine = line.split(Constants.FILE_CSV_SEPARATION);
 
             for (DataParser dataParser : dataParserList) {
-                dataParser.parse(splittedLine);
+                dataParser.parse(splittedLine, overallInstances == ++processCounter);
             }
             Helper.printConsoleProgressBar(Helper.calcPercentage
-                    (overallInstances, ++processCounter));
+                    (overallInstances, processCounter));
         }
         System.out.println("\nEnd Parse parse operation");
     }
@@ -116,21 +116,23 @@ public class Run {
 
 
         System.out.println("Begin threaded parse operation");
-        int processCounter = 0;
+        int processCounter = 1; // Header
         int overallInstances = Option.getInstance().getInstFileLineCount();
         while ((line = br.readLine()) != null) {
             String[] splittedLine = line.split(Constants.FILE_CSV_SEPARATION);
             CountDownLatch doneSignal = new CountDownLatch(parserSize);
 
+            processCounter++;
             for (ParseWorker worker : parseWorkers) {
-                worker.reset(doneSignal, splittedLine.clone());
+                worker.reset(doneSignal,
+                        splittedLine.clone(), overallInstances == processCounter);
                 executorService.submit(worker);
             }
 
             doneSignal.await();
 
             Helper.printConsoleProgressBar(Helper.calcPercentage
-                    (overallInstances, ++processCounter));
+                    (overallInstances, processCounter));
         }
         executorService.shutdown();
         System.out.println("\nEnd Parse threaded parse operation");

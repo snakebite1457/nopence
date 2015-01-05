@@ -44,6 +44,8 @@ public class OutputFile {
         int calcBufferSize = maxSequences / 100;
         if (calcBufferSize > 10 && calcBufferSize < 50) {
             _numBuffSeq = calcBufferSize;
+        } else if (calcBufferSize < 50) {
+            _numBuffSeq = maxSequences;
         } else {
             _numBuffSeq = Constants.NUM_DEFAULT_SEQ_BUFFER_SIZE;
         }
@@ -51,16 +53,18 @@ public class OutputFile {
         Helper.createFile(_outputFile);
     }
 
-    public void addInstance(Instance inst, long personId) {
+    public void addInstance(Instance inst, long personId, boolean lastInst) {
 
-        if (_curSequence == null || !_curSequence.equalPersonId(personId)) {
+        if (_curSequence == null
+                || !_curSequence.equalPersonId(personId)
+                || lastInst) {
 
             // Check if max sequences limit is reached
-            boolean canCreateSeq = _createdSequences <= _maxSequences;
+            boolean canCreateSeq = _createdSequences < _maxSequences;
 
             if (_curSequence != null) {
                 // Write instance into output file
-                writeSequence(_curSequence, !canCreateSeq);
+                writeSequence(_curSequence, !canCreateSeq || lastInst);
             }
 
             if (canCreateSeq) {
@@ -80,9 +84,9 @@ public class OutputFile {
     }
 
     private void writeSequence(Sequence seq, boolean force) {
-        if (_sequenceBuffer.size() <= _numBuffSeq && !force) {
-            _sequenceBuffer.add(seq);
-        } else {
+        _sequenceBuffer.add(seq);
+
+        if (_sequenceBuffer.size() >= _numBuffSeq || force) {
             try {
                 FileWriter fileWriter = new FileWriter(_outputFile, true);
                 try {

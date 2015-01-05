@@ -57,7 +57,7 @@ public class DataParser {
             throws IOException, SAXException {
 
         _varHistFile = varHistFile;
-        _dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+        _dateFormat = new SimpleDateFormat(Option.getInstance().getDateFormat());
         _outputFiles = new ArrayList<>();
 
         _typeConverter = new TypeConverter(attrInfoFile);
@@ -81,15 +81,16 @@ public class DataParser {
      *
      * @param splittedLine the splitted line from the instances file
      */
-    public void parse(String[] splittedLine) {
+    public void parse(String[] splittedLine, boolean lastLine) {
 
         try {
-            long personId = Long.parseLong(splittedLine[Constants.PERSON_ID_COLUMN]);
+            long personId = Long.parseLong(
+                    splittedLine[Option.getInstance().getColPersonId()]);
 
             Date spellBeginDate = _dateFormat.parse(
-                    splittedLine[Constants.SPELL_BEGIN_COLUMN]);
+                    splittedLine[Option.getInstance().getColSpellBegin()]);
             Date spellEndDate = _dateFormat.parse(
-                    splittedLine[Constants.SPELL_END_COLUMN]);
+                    splittedLine[Option.getInstance().getColSpellEnd()]);
 
             Instance instance = new Instance(spellBeginDate, spellEndDate);
             for (int i = 0; i < splittedLine.length; i++) {
@@ -109,7 +110,7 @@ public class DataParser {
             _outputFiles
                     .stream()
                     .filter(out -> !out.seqLimitReached())
-                    .forEach(out -> out.addInstance(instance, personId));
+                    .forEach(out -> out.addInstance(instance, personId, lastLine));
 
         } catch (ParseException e) {
             e.printStackTrace();

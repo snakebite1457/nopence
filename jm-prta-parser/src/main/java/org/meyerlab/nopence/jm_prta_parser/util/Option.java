@@ -4,9 +4,12 @@ import org.meyerlab.nopence.jm_prta_parser.util.exceptions.DirNotValidException;
 import org.meyerlab.nopence.jm_prta_parser.util.exceptions.FileNotValidException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.stream.IntStream;
 
 /**
  * Singleton class. Stores general information about the paths.
@@ -24,8 +27,14 @@ public class Option {
     private static String _pathOutputDir;
     private static int _instancesFileLineCount;
 
-    private Option() {
-    }
+    private static int _colPersonId;
+    private static int _colSpellBegin;
+    private static int _colSpellEnd;
+    private static String _dateFormat;
+
+    private static boolean debugMode = true;
+
+    private Option() { }
 
     public static void init(String pathInfoDir,
                             String pathDataFile,
@@ -61,6 +70,8 @@ public class Option {
         _maxSeqList = new ArrayList<>(maxSeqList);
 
         _instancesFileLineCount = Helper.countLines(new File(_pathDataFile));
+
+        readConfigFile();
     }
 
     public static Option getInstance() {
@@ -69,6 +80,38 @@ public class Option {
         }
 
         return _instance;
+    }
+
+    private static void readConfigFile() throws IOException {
+        String currentLocation = new File(Option.class.getProtectionDomain()
+                .getCodeSource().getLocation().getPath()).getParent();
+
+        Properties properties = new Properties();
+        properties.loadFromXML(debugMode
+                ? Option.class.getResourceAsStream("/properties.xml")
+                : new FileInputStream(currentLocation +
+                File.separator + "properties.xml"));
+
+        _colPersonId = Integer.parseInt(properties.getProperty("columnPersonId"));
+        _colSpellBegin = Integer.parseInt(properties.getProperty("columnSpellBegin"));
+        _colSpellEnd = Integer.parseInt(properties.getProperty("columnSpellEnd"));
+        _dateFormat = properties.getProperty("dateFormat");
+    }
+
+    public String getDateFormat() {
+        return _dateFormat;
+    }
+
+    public int getColPersonId() {
+        return _colPersonId;
+    }
+
+    public int getColSpellBegin() {
+        return _colSpellBegin;
+    }
+
+    public int getColSpellEnd() {
+        return _colSpellEnd;
     }
 
     public String getPathAttrInfoDir() {
