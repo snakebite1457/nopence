@@ -1,7 +1,7 @@
 package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers;
 
 import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreInputEvent;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 

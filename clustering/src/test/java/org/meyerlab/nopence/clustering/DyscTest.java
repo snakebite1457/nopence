@@ -3,7 +3,7 @@ package org.meyerlab.nopence.clustering;
 import com.google.common.base.Stopwatch;
 import junit.framework.TestCase;
 import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Dysc;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.HammingDistance;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;

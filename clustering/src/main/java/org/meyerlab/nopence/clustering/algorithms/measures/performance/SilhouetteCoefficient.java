@@ -2,7 +2,7 @@ package org.meyerlab.nopence.clustering.algorithms.measures.performance;
 
 import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
 import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
 
@@ -104,15 +104,18 @@ public class SilhouetteCoefficient implements IPerformanceMeasure {
 
                         if (distance < nearestClusterSeedDistance[0]) {
 
-                            secondDistance[0] = nearestClusterSeedDistance[0];
-                            secondNearestClusterSeed[0] = nearestClusterSeed[0];
-
+                            if (nearestClusterSeed[0] != null) {
+                                secondDistance[0] = nearestClusterSeedDistance[0];
+                                secondNearestClusterSeed[0] =
+                                        nearestClusterSeed[0].copy();
+                            }
 
                             nearestClusterSeedDistance[0] = distance;
-                            nearestClusterSeed[0] = clusterSeed;
-                        } else if (distance < secondDistance[0]) {
+                            nearestClusterSeed[0] = clusterSeed.copy();
+                        } else if (distance < secondDistance[0]
+                                && distance > nearestClusterSeedDistance[0]) {
                             secondDistance[0] = distance;
-                            secondNearestClusterSeed[0] = clusterSeed;
+                            secondNearestClusterSeed[0] = clusterSeed.copy();
                         }
                     });
 

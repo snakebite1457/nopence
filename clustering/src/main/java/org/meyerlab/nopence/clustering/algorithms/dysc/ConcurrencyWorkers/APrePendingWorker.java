@@ -1,9 +1,9 @@
 package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers;
 
 import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.FixedCluster;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.PendingCluster;
+import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.Cluster.FixedCluster;
+import org.meyerlab.nopence.clustering.util.Cluster.PendingCluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreCallbackEvent;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;

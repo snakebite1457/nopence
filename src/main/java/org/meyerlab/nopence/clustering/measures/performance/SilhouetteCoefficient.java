@@ -2,7 +2,7 @@ package org.meyerlab.nopence.clustering.measures.performance;
 
 import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
 import org.meyerlab.nopence.clustering.Points.Point;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.util.ClusterHashMap;
 
