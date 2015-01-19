@@ -1,7 +1,6 @@
 package org.meyerlab.nopence.jm_prta_parser.io;
 
 
-import moa.recommender.rc.utils.Hash;
 import org.kramerlab.carbon.util.discretization.Discretization;
 import org.kramerlab.carbon.util.discretization.DiscretizationType;
 
@@ -13,11 +12,12 @@ import org.meyerlab.nopence.jm_prta_parser.converter.Converter;
 import org.meyerlab.nopence.jm_prta_parser.converter.NominalBinaryConverter;
 import org.meyerlab.nopence.jm_prta_parser.converter.NumericBinaryConverter;
 import org.meyerlab.nopence.jm_prta_parser.converter.OrdinalBinaryConverter;
-import org.meyerlab.nopence.jm_prta_parser.util.Constants;
-import org.meyerlab.nopence.jm_prta_parser.util.Helper;
+import org.meyerlab.nopence.jm_prta_parser.util.PrtaParserConstants;
 import org.meyerlab.nopence.jm_prta_parser.util.IntGenerator;
 import org.meyerlab.nopence.jm_prta_parser.util.Option;
 import org.meyerlab.nopence.jm_prta_parser.util.exceptions.AttrNotContainsValueException;
+import org.meyerlab.nopence.utils.Constants;
+import org.meyerlab.nopence.utils.Helper;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -61,7 +61,6 @@ public class TypeConverter {
      * information the converter for each attribute.
      * <p>
      * In this case we only need converter from x to binary.
-     * </p>
      *
      * @throws IOException
      * @throws SAXException
@@ -69,91 +68,30 @@ public class TypeConverter {
     public void buildConverter() throws IOException, SAXException {
         Document attrInfoDocument = _builder.parse(_attrInfoFile);
         NodeList nodeList = attrInfoDocument
-                .getElementsByTagName(Constants.ATTR_INFO_ATTR_ROOT);
+                .getElementsByTagName(PrtaParserConstants.ATTR_INFO_ATTR_ROOT);
 
-        ArrayList<NumericAttribute> numAttrList = new ArrayList<>();
-        HashMap<Integer, NumericBinaryConverter.OrdinalMapping> numAttrOrdinalMapping = new HashMap<>();
 
+        List<Node> continuousNodes = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             NamedNodeMap nodeAttrs = nodeList.item(i).getAttributes();
 
-            int id = Integer.parseInt(nodeAttrs.getNamedItem(
-                    Constants.ATTR_INFO_ATTR_NODE_ID).getNodeValue());
-            String name = nodeAttrs.getNamedItem(
-                    Constants.ATTR_INFO_ATTR_NODE_NAME).getNodeValue();
-
-            HashMap<Double, String> valueMap;
-
-            Converter converter = null;
-            Attribute currentAttr = null;
-
-            String curAttrType = nodeList.item(i).getAttributes()
-                    .getNamedItem(Constants.ATTR_INFO_ATTR_NODE_TYPE)
-                    .getNodeValue();
+            String curAttrType = nodeAttrs.getNamedItem(
+                    PrtaParserConstants.ATTR_INFO_ATTR_NODE_TYPE).getNodeValue();
 
             switch (Attribute.Type.valueOf(curAttrType)) {
                 case ordinal:
-                    HashMap<Integer, Double> ordinalOrder = new HashMap<>();
-
-                    valueMap = getValues(nodeList.item(i), true, ordinalOrder);
-                    currentAttr = new OrdinalAttribute(id, name,
-                            valueMap, Attribute.Type.ordinal);
-
-                    converter = new OrdinalBinaryConverter(
-                            (OrdinalAttribute) currentAttr,
-                            _intGenerator, ordinalOrder);
+                case nominal:
+                    createDiscreteConverter(nodeList.item(i));
                     break;
                 case numeric:
-                    Attribute.Type afterDisType =
-                            Attribute.Type.valueOf(nodeAttrs.getNamedItem(
-                                    Constants.ATTR_INFO_VAL_NODE_NUMTYPE_AFTERTYPE).getNodeValue());
-                    DiscretizationType disType =
-                            DiscretizationType.valueOf(nodeAttrs.getNamedItem(
-                                    Constants.ATTR_INFO_VAL_NODE_NUMTYPE_DISTYPE).getNodeValue());
-                    int numberOfBins =
-                            Integer.parseInt(nodeAttrs.getNamedItem(
-                                    Constants.ATTR_INFO_VAL_NODE_NUMTYPE_BINS).getNodeValue());
-
-                    if (afterDisType == Attribute.Type.ordinal) {
-                        NumericBinaryConverter.OrdinalMapping ordinalMapping =
-                                NumericBinaryConverter.OrdinalMapping
-                                        .valueOf(nodeAttrs.getNamedItem(
-                                                Constants.ATTR_INFO_VAL_NODE_NUMTYPE_ORDINALORDER).getNodeValue());
-
-                        numAttrOrdinalMapping.put(id, ordinalMapping);
-                    }
-
-                    numAttrList.add(new NumericAttribute(id, name,
-                            disType, numberOfBins, afterDisType));
-                    continue;
-                case nominal:
-                    valueMap = getValues(nodeList.item(i), false, null);
-                    currentAttr = new NominalAttribute(id, name,
-                            valueMap, Attribute.Type.nominal);
-                    converter =
-                            new NominalBinaryConverter(
-                                    (NominalAttribute) currentAttr, _intGenerator);
+                    continuousNodes.add(nodeList.item(i));
                     break;
-                default:
-                    continue;
             }
-            _converterAttrIdMap.put(currentAttr.getId(), converter);
         }
 
-        // Read out the numAttrList and create the discretization for all
-        // these numeric attributes. And then create the converter.
-        setDiscretizationToAttrs(numAttrList);
-        numAttrList.forEach(attr -> {
-            if (attr.getConvertedType() == Attribute.Type.ordinal) {
-                _converterAttrIdMap.put(attr.getId(),
-                        new NumericBinaryConverter(attr, _intGenerator,
-                                numAttrOrdinalMapping.get(attr.getId())));
-            } else {
-                _converterAttrIdMap.put(attr.getId(),
-                        new NumericBinaryConverter(attr, _intGenerator));
-            }
-        });
+        createContinuousConverter(continuousNodes);
     }
+
 
     /**
      * Returns the converted attributes and whose value. Because this is a
@@ -218,8 +156,9 @@ public class TypeConverter {
         _intGenerator = new IntGenerator();
     }
 
-    private HashMap<Double, String> getValues(
-            Node node, boolean ordinal, HashMap<Integer, Double> ordinalOrder) {
+    private Map<Double, String> getValues(Node node,
+                                          boolean ordinal,
+                                          Map<Integer, Double> ordinalOrder) {
 
         HashMap<Double, String> valueMap = new HashMap<>();
         NodeList values = node.getChildNodes();
@@ -237,15 +176,16 @@ public class TypeConverter {
             }
 
             double valueNumber = Double.parseDouble(values.item(i)
-                    .getAttributes().getNamedItem(Constants.ATTR_INFO_VAL_NODE_NUM).getNodeValue());
+                    .getAttributes().getNamedItem(PrtaParserConstants.ATTR_INFO_VAL_NODE_NUM).getNodeValue());
+
             String valueName = values.item(i).getAttributes().getNamedItem
-                    (Constants.ATTR_INFO_VAL_NODE_NAME).getNodeValue();
+                    (PrtaParserConstants.ATTR_INFO_VAL_NODE_NAME).getNodeValue();
 
             valueMap.put(valueNumber, valueName);
 
             if (ordinal) {
                 int oPosition = Integer.parseInt(values.item(i)
-                        .getAttributes().getNamedItem(Constants.ATTR_INFO_VAL_NODE_OPOSITION)
+                        .getAttributes().getNamedItem(PrtaParserConstants.ATTR_INFO_VAL_NODE_OPOSITION)
                         .getNodeValue());
                 ordinalOrder.put(oPosition, valueNumber);
             }
@@ -276,7 +216,7 @@ public class TypeConverter {
             br.readLine();
 
             for (int counter = 0; counter <
-                    Constants.NUM_INST_FOR_DISCRETIZATION; counter++) {
+                    PrtaParserConstants.NUM_INST_FOR_DISCRETIZATION; counter++) {
                 String line = br.readLine();
                 if (line == null) {
                     continue;
@@ -331,5 +271,115 @@ public class TypeConverter {
             }
         }
 
+    }
+
+
+    private void createDiscreteConverter(Node attributeNode) {
+        NamedNodeMap nodeAttrs = attributeNode.getAttributes();
+
+        int id = Integer.parseInt(nodeAttrs.getNamedItem(
+                PrtaParserConstants.ATTR_INFO_ATTR_NODE_ID).getNodeValue());
+
+        String name = nodeAttrs.getNamedItem(
+                PrtaParserConstants.ATTR_INFO_ATTR_NODE_NAME).getNodeValue();
+
+        boolean nameAsPrefix = Boolean.parseBoolean(nodeAttrs.getNamedItem(
+                PrtaParserConstants.ATTR_INFO_ATTR_NODE_NAME_AS_PREFIX).getNodeValue());
+
+        Map<Double, String> valueMap;
+
+        Converter converter = null;
+        Attribute currentAttr = null;
+
+        String curAttrType = nodeAttrs.getNamedItem(
+                PrtaParserConstants.ATTR_INFO_ATTR_NODE_TYPE).getNodeValue();
+
+        switch (Attribute.Type.valueOf(curAttrType)) {
+            case ordinal:
+                HashMap<Integer, Double> ordinalOrder = new HashMap<>();
+
+                valueMap = getValues(attributeNode, true, ordinalOrder);
+                currentAttr = new OrdinalAttribute(id, name,
+                        valueMap, Attribute.Type.ordinal);
+
+                converter = new OrdinalBinaryConverter(
+                        (OrdinalAttribute) currentAttr, _intGenerator,
+                        ordinalOrder, nameAsPrefix);
+                break;
+            case numeric:
+                return;
+            case nominal:
+                valueMap = getValues(attributeNode, false, null);
+                currentAttr = new NominalAttribute(id, name,
+                        valueMap, Attribute.Type.nominal);
+                converter =
+                        new NominalBinaryConverter(
+                                (NominalAttribute) currentAttr,
+                                _intGenerator, nameAsPrefix);
+                break;
+        }
+
+        if (currentAttr != null) {
+            _converterAttrIdMap.put(currentAttr.getId(), converter);
+        }
+    }
+
+    private void createContinuousConverter(List<Node> continuousAttrs) {
+
+        ArrayList<NumericAttribute> numAttrList = new ArrayList<>();
+        HashMap<Integer, NumericBinaryConverter.OrdinalMapping> ordinalMapping = new HashMap<>();
+        HashMap<Integer, Boolean> nameAsPrefixMapping = new HashMap<>();
+
+        for (Node continuousAttr : continuousAttrs) {
+            int id = Integer.parseInt(continuousAttr.getAttributes().getNamedItem(
+                    PrtaParserConstants.ATTR_INFO_ATTR_NODE_ID).getNodeValue());
+
+            String name = continuousAttr.getAttributes().getNamedItem(
+                    PrtaParserConstants.ATTR_INFO_ATTR_NODE_NAME).getNodeValue();
+
+            boolean nameAsPrefix = Boolean.parseBoolean(continuousAttr.getAttributes().getNamedItem(
+                    PrtaParserConstants.ATTR_INFO_ATTR_NODE_NAME_AS_PREFIX).getNodeValue());
+
+            nameAsPrefixMapping.put(id, nameAsPrefix);
+
+            Attribute.Type afterDisType =
+                    Attribute.Type.valueOf(continuousAttr.getAttributes().getNamedItem(
+                            PrtaParserConstants.ATTR_INFO_VAL_NODE_NUMTYPE_AFTERTYPE).getNodeValue());
+            DiscretizationType disType =
+                    DiscretizationType.valueOf(continuousAttr.getAttributes().getNamedItem(
+                            PrtaParserConstants.ATTR_INFO_VAL_NODE_NUMTYPE_DISTYPE).getNodeValue());
+            int numberOfBins =
+                    Integer.parseInt(continuousAttr.getAttributes().getNamedItem(
+                            PrtaParserConstants.ATTR_INFO_VAL_NODE_NUMTYPE_BINS).getNodeValue());
+
+            if (afterDisType == Attribute.Type.ordinal) {
+
+                ordinalMapping.put(id, NumericBinaryConverter.OrdinalMapping
+                        .valueOf(continuousAttr.getAttributes().getNamedItem(
+                                PrtaParserConstants.ATTR_INFO_VAL_NODE_NUMTYPE_ORDINALORDER).getNodeValue()));
+            }
+
+            numAttrList.add(new NumericAttribute(id, name,
+                    disType, numberOfBins, afterDisType));
+        }
+
+        // Read out the numAttrList and create the discretization for all
+        // these numeric attributes. And then create the converter.
+        setDiscretizationToAttrs(numAttrList);
+        numAttrList.forEach(attr -> {
+            boolean nameAsPrefix = nameAsPrefixMapping.get(attr.getId());
+            NumericBinaryConverter.OrdinalMapping ordMapping = ordinalMapping
+                    .get(attr.getId());
+
+
+            if (attr.getConvertedType() == Attribute.Type.ordinal) {
+                _converterAttrIdMap.put(attr.getId(),
+                        new NumericBinaryConverter(attr, _intGenerator,
+                                ordMapping, nameAsPrefix));
+            } else {
+                _converterAttrIdMap.put(attr.getId(),
+                        new NumericBinaryConverter(attr, _intGenerator, nameAsPrefix));
+            }
+        });
     }
 }

@@ -18,14 +18,17 @@ public class OrdinalBinaryConverter extends Converter {
     private OrdinalAttribute _ordinalAttr;
     private Map<Double, List<Integer>> _attrMapping;
     private Map<Integer, Double> _ordinalOrder;
+    private boolean _nameAsPrefix;
 
     public OrdinalBinaryConverter(OrdinalAttribute ordinalAttribute,
                                   IntGenerator intGenerator,
-                                  Map<Integer, Double> ordinalOrder) {
+                                  Map<Integer, Double> ordinalOrder,
+                                  boolean nameAsPrefix) {
         _ordinalAttr = ordinalAttribute;
         _attrMapping = new HashMap<>();
         _intGenerator = intGenerator;
         _ordinalOrder = HashIntDoubleMaps.newImmutableMap(ordinalOrder);
+        _nameAsPrefix = nameAsPrefix;
         convert();
     }
 
@@ -72,6 +75,10 @@ public class OrdinalBinaryConverter extends Converter {
         }
 
         _attrMapping.put(ordinalNumber, mappedConvertedAttrs);
+
+        if (_nameAsPrefix) {
+            ordinalName = _ordinalAttr.getName() + "; " + ordinalName;
+        }
 
         BinaryAttribute binAttr =
                 new BinaryAttribute(attrId, ordinalName,

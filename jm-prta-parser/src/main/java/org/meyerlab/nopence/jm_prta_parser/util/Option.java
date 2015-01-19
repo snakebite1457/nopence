@@ -1,7 +1,8 @@
 package org.meyerlab.nopence.jm_prta_parser.util;
 
-import org.meyerlab.nopence.jm_prta_parser.util.exceptions.DirNotValidException;
-import org.meyerlab.nopence.jm_prta_parser.util.exceptions.FileNotValidException;
+import org.meyerlab.nopence.utils.exceptions.DirNotValidException;
+import org.meyerlab.nopence.utils.exceptions.FileNotValidException;
+import org.meyerlab.nopence.utils.Helper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.IntStream;
 
 /**
  * Singleton class. Stores general information about the paths.
@@ -59,7 +59,7 @@ public class Option {
             throw new DirNotValidException(pathOutputDir);
         }
 
-        if (!Helper.containsDirAttrInfoFiles(new File(pathInfoDir))) {
+        if (!PrtaParserHelper.containsDirAttrInfoFiles(new File(pathInfoDir))) {
             return;
         }
 

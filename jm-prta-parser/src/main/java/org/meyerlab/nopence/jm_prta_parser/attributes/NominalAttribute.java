@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Dini
+ * @author Dennis Meyer
  */
 public class NominalAttribute extends Attribute {
 

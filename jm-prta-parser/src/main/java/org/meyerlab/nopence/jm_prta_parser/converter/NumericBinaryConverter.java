@@ -22,14 +22,17 @@ public class NumericBinaryConverter extends Converter {
      */
     private Map<Integer, List<Integer>> _attrMapping;
     private OrdinalMapping _ordinalMapping;
+    private boolean _nameAsPrefix;
 
     private NumericAttribute _numericAttribute;
 
     public NumericBinaryConverter(NumericAttribute numericAttribute,
-                                  IntGenerator intGenerator) {
+                                  IntGenerator intGenerator,
+                                  boolean nameAsPrefix) {
         _numericAttribute = numericAttribute;
         _attrMapping = new HashMap<>();
         _intGenerator = intGenerator;
+        _nameAsPrefix = nameAsPrefix;
 
         try {
             convert();
@@ -40,11 +43,13 @@ public class NumericBinaryConverter extends Converter {
 
     public NumericBinaryConverter(NumericAttribute numericAttribute,
                                   IntGenerator intGenerator,
-                                  OrdinalMapping ordinalMapping) {
+                                  OrdinalMapping ordinalMapping,
+                                  boolean nameAsPrefix) {
         _numericAttribute = numericAttribute;
         _attrMapping = new HashMap<>();
         _intGenerator = intGenerator;
         _ordinalMapping = ordinalMapping;
+        _nameAsPrefix = nameAsPrefix;
 
         try {
             convert();
@@ -77,8 +82,12 @@ public class NumericBinaryConverter extends Converter {
         double[] borders = _numericAttribute.getBorder(i);
 
         int newAttrId = _intGenerator.getNext();
-        String newAttrName = new StringBuilder(_numericAttribute.getName())
-                .append(" ").append(borders[0])
+        StringBuilder newAttrNameBuilder = new StringBuilder();
+
+        if (_nameAsPrefix) {
+            newAttrNameBuilder.append(_numericAttribute.getName()).append("; ");
+        }
+        String newAttrName = newAttrNameBuilder.append(" ").append(borders[0])
                 .append(" - ").append(borders[1]).toString();
 
         List<Integer> mappedAttrIds = new ArrayList<>();

@@ -1,7 +1,7 @@
 package org.meyerlab.nopence.jm_prta_parser.util.model;
 
-import org.meyerlab.nopence.jm_prta_parser.util.Constants;
-import org.meyerlab.nopence.jm_prta_parser.util.Helper;
+import org.meyerlab.nopence.jm_prta_parser.util.PrtaParserConstants;
+import org.meyerlab.nopence.utils.Helper;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -47,7 +47,7 @@ public class OutputFile {
         } else if (calcBufferSize < 50) {
             _numBuffSeq = maxSequences;
         } else {
-            _numBuffSeq = Constants.NUM_DEFAULT_SEQ_BUFFER_SIZE;
+            _numBuffSeq = PrtaParserConstants.NUM_DEFAULT_SEQ_BUFFER_SIZE;
         }
 
         Helper.createFile(_outputFile);

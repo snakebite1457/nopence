@@ -2,11 +2,13 @@ package org.meyerlab.nopence.jm_prta_parser.io;
 
 import org.meyerlab.nopence.jm_prta_parser.attributes.Attribute;
 import org.meyerlab.nopence.jm_prta_parser.converter.Converter;
-import org.meyerlab.nopence.jm_prta_parser.util.Constants;
-import org.meyerlab.nopence.jm_prta_parser.util.Helper;
+import org.meyerlab.nopence.jm_prta_parser.util.PrtaParserConstants;
+import org.meyerlab.nopence.jm_prta_parser.util.PrtaParserHelper;
 import org.meyerlab.nopence.jm_prta_parser.util.Option;
 import org.meyerlab.nopence.jm_prta_parser.util.model.Instance;
 import org.meyerlab.nopence.jm_prta_parser.util.model.OutputFile;
+import org.meyerlab.nopence.utils.Constants;
+import org.meyerlab.nopence.utils.Helper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -65,7 +67,7 @@ public class DataParser {
 
         for (int maxSeq : Option.getInstance().getMaxSeqList()) {
             String outputFileName =
-                    Helper.generateOutputFileName(attrInfoFile, maxSeq);
+                    PrtaParserHelper.generateOutputFileName(attrInfoFile, maxSeq);
             File outputFile = new File(
                     Option.getInstance().getPathOutputDir(), outputFileName);
 
@@ -184,47 +186,54 @@ public class DataParser {
                                    Converter curConverter) {
         // Create varId element
         Element varIdElement =
-                document.createElement(Constants.VAR_HIST_ELEMENT_VAR_ID);
+                document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_VAR_ID);
         varIdElement.appendChild(
                 document.createTextNode(
                         String.valueOf(curConvertedAttr.getId())));
 
         // Create labelShort
         Element labelShortElement =
-                document.createElement(Constants.VAR_HIST_ELEMENT_LABEL_SHORT);
+                document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_SHORT);
         labelShortElement.appendChild(
                 document.createTextNode(curConvertedAttr.getName()));
 
         // Create labelLong
         Element labelLongElement =
-                document.createElement(Constants.VAR_HIST_ELEMENT_LABEL_LONG);
+                document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_LONG);
         labelLongElement.appendChild(
-                document.createTextNode(Constants.VAR_HIST_ELEMENT_LABEL_LONG_TEXT));
+                document.createTextNode(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_LONG_TEXT));
 
         // Create cluster
-        Attribute orgAttr = curConverter
-                .getOriginalAttrByConvertedAttrId(curConvertedAttr.getId());
-
-        int clusterId = orgAttr.getConvertedType() == Attribute.Type.ordinal
-                ? orgAttr.getId()
-                : maxOriginalId + curConvertedAttr.getId();
-
         Element clusterElement =
-                document.createElement(Constants.VAR_HIST_ELEMENT_LABEL_CLUSTER);
+                document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_CLUSTER);
         clusterElement.appendChild(
-                document.createTextNode(String.valueOf(clusterId)));
+                document.createTextNode(""));
 
         // Create adds
         Element addsElement =
-                document.createElement(Constants.VAR_HIST_ELEMENT_LABEL_ADDS);
+                document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_ADDS);
         addsElement.appendChild(
-                document.createTextNode(Constants.VAR_HIST_ELEMENT_LABEL_ADDS_TEXT));
+                document.createTextNode(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_ADDS_TEXT));
+
+        // Create ordinalId
+        Attribute orgAttr = curConverter
+                .getOriginalAttrByConvertedAttrId(curConvertedAttr.getId());
+
+        int ordinalId = orgAttr.getConvertedType() == Attribute.Type.ordinal
+                ? orgAttr.getId()
+                : maxOriginalId + curConvertedAttr.getId();
+
+        Element ordinalIdElement =
+                document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_ORDINALID);
+        ordinalIdElement.appendChild(
+                document.createTextNode(String.valueOf(ordinalId)));
 
         varElement.appendChild(varIdElement);
         varElement.appendChild(labelShortElement);
         varElement.appendChild(labelLongElement);
         varElement.appendChild(clusterElement);
         varElement.appendChild(addsElement);
+        varElement.appendChild(ordinalIdElement);
     }
 
 

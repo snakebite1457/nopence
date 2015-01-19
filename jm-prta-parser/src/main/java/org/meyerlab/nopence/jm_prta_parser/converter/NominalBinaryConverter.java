@@ -20,12 +20,15 @@ public class NominalBinaryConverter extends Converter {
 
     private NominalAttribute _nomAttr;
     private Map<Double, Integer> _attrMapping;
+    private boolean _nameAsPrefix;
 
     public NominalBinaryConverter(NominalAttribute nomAttr,
-                                  IntGenerator intGenerator) {
+                                  IntGenerator intGenerator,
+                                  boolean nameAsPrefix) {
         _nomAttr = nomAttr;
         _attrMapping = new HashMap<>();
         _intGenerator = intGenerator;
+        _nameAsPrefix = nameAsPrefix;
         convert();
     }
 
@@ -43,6 +46,10 @@ public class NominalBinaryConverter extends Converter {
         binValues.add(1, "Active");
 
         _attrMapping.put(number, attrId);
+
+        if (_nameAsPrefix) {
+            name = _nomAttr.getName() + "; " + name;
+        }
 
         BinaryAttribute binAttr =
                 new BinaryAttribute(attrId, name,
