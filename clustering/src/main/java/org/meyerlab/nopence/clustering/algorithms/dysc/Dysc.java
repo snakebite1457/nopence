@@ -1,10 +1,10 @@
 package org.meyerlab.nopence.clustering.algorithms.dysc;
 
 import org.meyerlab.nopence.clustering.IClusterer;
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
-import org.meyerlab.nopence.clustering.util.Cluster.FixedCluster;
-import org.meyerlab.nopence.clustering.util.Cluster.PendingCluster;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
+import org.meyerlab.nopence.clustering.util.cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.cluster.FixedCluster;
+import org.meyerlab.nopence.clustering.util.cluster.PendingCluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreCallbackEvent;
 import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents.APreInputEvent;
 import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers.APreFixedWorker;
@@ -12,7 +12,6 @@ import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers.APrePe
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
 import org.meyerlab.nopence.clustering.util.WorkerHashMap;
-import org.omg.CORBA.Environment;
 
 import java.util.*;
 import java.util.concurrent.*;

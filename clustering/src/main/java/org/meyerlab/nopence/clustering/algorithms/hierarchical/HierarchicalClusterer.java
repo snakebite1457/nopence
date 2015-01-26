@@ -1,12 +1,13 @@
 package org.meyerlab.nopence.clustering.algorithms.hierarchical;
 
 import org.meyerlab.nopence.clustering.IClusterer;
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.ClusteringMethod;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.TerminateOption;
+import org.meyerlab.nopence.clustering.util.cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
-import org.meyerlab.nopence.clustering.util.ClusteringMethod;
-import org.meyerlab.nopence.clustering.util.Clustering.DistanceMatrix;
+import org.meyerlab.nopence.clustering.util.clustering.DistanceMatrix;
 
 import java.util.List;
 
@@ -16,13 +17,21 @@ import java.util.List;
 public class HierarchicalClusterer implements IClusterer {
 
     private DistanceMatrix _distanceMatrix;
-    private int _terminateClusterSize;
-    private ClusteringMethod _clusteringMethod;
+    private final TerminateOption _terminateOption;
+    private final ClusteringMethod _clusteringMethod;
 
-    public HierarchicalClusterer(int terminateClusterSize,
+    public HierarchicalClusterer(TerminateOption terminateOption,
                                  ClusteringMethod clusteringMethod) {
-        _terminateClusterSize = terminateClusterSize;
+        _terminateOption = terminateOption;
         _clusteringMethod = clusteringMethod;
+    }
+
+    public long getCurrentClusterSize() {
+        return _distanceMatrix.getClusterSize();
+    }
+
+    public double getCurrentMinDistance() {
+        return _distanceMatrix.getMinDistance();
     }
 
     @Override
@@ -46,7 +55,7 @@ public class HierarchicalClusterer implements IClusterer {
 
     @Override
     public void start() {
-        while (_distanceMatrix.getClusterSize() > _terminateClusterSize) {
+        while (!_terminateOption.checkTerminated(this)) {
             _distanceMatrix.mergeAndUpdate(_distanceMatrix.pollClosest());
         }
     }

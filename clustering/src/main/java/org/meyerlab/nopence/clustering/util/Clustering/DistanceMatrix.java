@@ -1,13 +1,14 @@
-package org.meyerlab.nopence.clustering.util.Clustering;
+package org.meyerlab.nopence.clustering.util.clustering;
 
-import net.openhft.koloboke.collect.map.hash.HashLongDoubleMaps;
-import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
+import net.openhft.koloboke.collect.map.hash.HashObjDoubleMaps;
+import net.openhft.koloboke.collect.map.hash.HashObjObjMaps;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.ClusteringMethod;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
-import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
-import org.meyerlab.nopence.clustering.util.Cluster.SimpleCluster;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
-import org.meyerlab.nopence.clustering.util.ClusteringMethod;
+import org.meyerlab.nopence.clustering.util.ClusteringHelper;
+import org.meyerlab.nopence.clustering.util.cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.cluster.SimpleCluster;
 import org.meyerlab.nopence.utils.Helper;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class DistanceMatrix {
     private ClusteringMethod _clusteringMethod;
 
     private PriorityQueue<ClusterPairItem> _clusterDistances;
-    private Map<Long, ClusterPairItem> _clusterPairItems;
+    private Map<String, ClusterPairItem> _clusterPairItems;
 
-    private Map<Long, Double> _pointDistances;
+    private Map<String, Double> _pointDistances;
 
     public DistanceMatrix(List<Point> points,
                           IDistanceMeasure distanceMeasure,
@@ -37,10 +38,14 @@ public class DistanceMatrix {
         _clusteringMethod = clusteringMethod;
 
         _clusterDistances = new PriorityQueue<>();
-        _clusterPairItems = HashLongObjMaps.newMutableMap();
-        _pointDistances = HashLongDoubleMaps.newMutableMap();
+        _clusterPairItems = HashObjObjMaps.newMutableMap();
+        _pointDistances = HashObjDoubleMaps.newMutableMap();
 
         initCluster(points);
+    }
+
+    public double getMinDistance() {
+        return _clusterDistances.peek().getClusterPair().getDistance();
     }
 
     public ClusterPair pollClosest() {
@@ -67,7 +72,7 @@ public class DistanceMatrix {
         // set all cluster pairs as removed which have an arc to second cluster
         removeClusterPairs(second);
 
-        first.merge(second, _distanceMeasure);
+        first.merge(second);
         _currentCluster.remove(second.getClusterId());
 
         // Update all distances that points to the new merged cluster
@@ -95,17 +100,15 @@ public class DistanceMatrix {
                                 || item.getClusterPair().getSecondClusterId() == mergedCluster.getClusterId())
                                 && !item.getRemoved())
                 .forEach(item -> {
-                    switch (_clusteringMethod) {
-                        case averageLink:
-                            updateDistAverageLink(item.getClusterPair());
-                            break;
-                        case completeLink:
-                            updateDistCompleteLink(item.getClusterPair());
-                            break;
-                        case singleLink:
-                            updateDistSingleLink(item.getClusterPair());
-                            break;
-                    }
+                    Cluster first =
+                            _currentCluster.get(item.getClusterPair().getFirstClusterId());
+                    Cluster second =
+                            _currentCluster.get(item.getClusterPair().getSecondClusterId());
+
+                    double distance = _clusteringMethod.calculateDistance
+                            (first, second, this);
+
+                    item.getClusterPair().setDistance(distance);
                 });
     }
 
@@ -113,68 +116,16 @@ public class DistanceMatrix {
         return _currentCluster.size();
     }
 
-    private void updateDistAverageLink(ClusterPair clusterPair) {
+    public double getPointDistance(long firstId, long secondId) {
 
-        Cluster first = _currentCluster.get(clusterPair.getFirstClusterId());
-        Cluster second = _currentCluster.get(clusterPair.getSecondClusterId());
+        String hash = ClusteringHelper.buildPointHash(firstId, secondId);
+        String hashReverse = ClusteringHelper.buildPointHash(secondId, firstId);
 
-        final double[] distance = {0};
-        first.getClusterPoints()
-                .forEach(p1 -> second.getClusterPoints()
-                        .forEach(p2 -> {
-                            int hashCode = (p1.Id + p2.Id + "").hashCode();
-                            distance[0] += _pointDistances.get(hashCode);
-                        }));
+        if (_pointDistances.containsKey(hash)) {
+            return _pointDistances.get(hash);
+        }
 
-        distance[0] /= (first.numPoints() * second.numPoints());
-        clusterPair.setDistance(distance[0]);
-    }
-
-    private void updateDistCompleteLink(ClusterPair clusterPair) {
-
-        Cluster first = _currentCluster.get(clusterPair.getFirstClusterId());
-        Cluster second = _currentCluster.get(clusterPair.getSecondClusterId());
-
-        final double[] maxDistance = {0};
-
-        first.getClusterPoints()
-                .forEach(p1 -> second.getClusterPoints()
-                        .forEach(p2 -> {
-                            int hashCode = (p1.Id + p2.Id + "").hashCode();
-
-                            double distance = _pointDistances.get(hashCode);
-                            if (maxDistance[0] < distance) {
-                                maxDistance[0] = distance;
-                            }
-                        }));
-
-        clusterPair.setDistance(maxDistance[0]);
-    }
-
-    private void updateDistSingleLink(ClusterPair clusterPair) {
-
-        Cluster first = _currentCluster.get(clusterPair.getFirstClusterId());
-        Cluster second = _currentCluster.get(clusterPair.getSecondClusterId());
-
-        final double[] minDistance = {Double.MAX_VALUE};
-
-        first.getClusterPoints()
-                .forEach(p1 -> second.getClusterPoints()
-                        .forEach(p2 -> {
-                            long hashCode = Helper.createHash(p1.Id, p2.Id);
-                            Double distance = _pointDistances.get(hashCode);
-
-                            if (distance == null) {
-                                hashCode = Helper.createHash(p2.Id, p1.Id);
-                                distance = _pointDistances.get(hashCode);
-                            }
-
-                            if (minDistance[0] > distance) {
-                                minDistance[0] = distance;
-                            }
-                        }));
-
-        clusterPair.setDistance(minDistance[0]);
+        return _pointDistances.get(hashReverse);
     }
 
     private void initCluster(List<Point> points) {
@@ -200,8 +151,8 @@ public class DistanceMatrix {
                 _clusterPairItems.put(clusterPairItem.getHash(), clusterPairItem);
 
                 // Store point distance information
-                long hashCode = Helper.createHash(first.getClusterSeed().Id,
-                        second.getClusterSeed().Id);
+                String hashCode = ClusteringHelper.buildPointHash(first
+                                .getClusterSeed(), second.getClusterSeed());
                 _pointDistances.put(hashCode, distance);
             }
         }

@@ -1,6 +1,4 @@
-package org.meyerlab.nopence.clustering.util.Clustering;
-
-import org.meyerlab.nopence.utils.Helper;
+package org.meyerlab.nopence.clustering.util.clustering;
 
 /**
  * @author Dennis Meyer
@@ -57,9 +55,9 @@ public class ClusterPair implements Comparable<ClusterPair> {
         this._secondClusterId = _secondClusterId;
     }
 
-    public static long hashClusterPair(ClusterPair clusterPair) {
-        return Helper.createHash(clusterPair._firstClusterId, clusterPair
-                ._secondClusterId);
+    public static String getHashCode(ClusterPair clusterPair) {
+        return clusterPair.getFirstClusterId()
+                + ";;;;"
+                + clusterPair.getSecondClusterId();
     }
-
 }

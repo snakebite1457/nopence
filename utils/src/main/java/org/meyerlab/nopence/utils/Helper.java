@@ -96,12 +96,4 @@ public class Helper {
         bar.append("]   ").append(percent).append("%");
         System.out.print("\r" + bar.toString());
     }
-
-    public static int createHash(int x, int y) {
-        return x * intPrime + y;
-    }
-
-    public static long createHash(long x, long y) {
-        return x * longPrime + y;
-    }
 }

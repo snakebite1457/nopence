@@ -2,13 +2,11 @@ package org.meyerlab.nopence.clustering;
 
 import com.google.common.base.Stopwatch;
 import junit.framework.TestCase;
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
+import org.meyerlab.nopence.clustering.util.cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.dysc.Dysc;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.HammingDistance;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
-import org.meyerlab.nopence.clustering.algorithms.measures.performance.IPerformanceMeasure;
-import org.meyerlab.nopence.clustering.algorithms.measures.performance.SilhouetteCoefficient;
 import org.meyerlab.nopence.clustering.util.DataStream;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
 
@@ -58,14 +56,14 @@ public class DyscTest extends TestCase {
 
                 System.out.println("Time elapsed: : "
                         + stopwatch.stop().elapsed(TimeUnit.SECONDS));
-                System.out.println("Cluster count: " + cluster.size());
+                System.out.println("cluster count: " + cluster.size());
                 System.out.println("Point count: " + cluster.numPoints());
 
                 Map<Long, Point> pointMap = new HashMap<>();
                 cluster.values().forEach(cl -> cl.getClusterPoints()
                         .forEach(point -> pointMap.put(point.Id, point)));
 
-                System.out.println("Unique Points: " + pointMap.size() + "\n");
+                System.out.println("Unique points: " + pointMap.size() + "\n");
 
                 points = null;
                 dataStream.dispose();

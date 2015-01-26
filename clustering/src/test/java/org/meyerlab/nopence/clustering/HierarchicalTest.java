@@ -2,16 +2,18 @@ package org.meyerlab.nopence.clustering;
 
 import com.google.common.base.Stopwatch;
 import junit.framework.TestCase;
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.algorithms.dysc.Dysc;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.SingleLinkageClusteringMethod;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.ClusterSizeTerminateOption;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.MinDistanceTerminationOption;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.TerminateOption;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
 import org.meyerlab.nopence.clustering.algorithms.hierarchical.HierarchicalClusterer;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.HammingDistance;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.algorithms.measures.performance.IPerformanceMeasure;
 import org.meyerlab.nopence.clustering.algorithms.measures.performance.SilhouetteCoefficient;
-import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.cluster.Cluster;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
-import org.meyerlab.nopence.clustering.util.ClusteringMethod;
 import org.meyerlab.nopence.clustering.util.DataStream;
 
 import java.io.IOException;
@@ -35,16 +37,22 @@ public class HierarchicalTest extends TestCase {
 
             Stopwatch stopwatch = Stopwatch.createStarted();
 
-            DataStream dataStream = new DataStream("hierarchical-test.txt", 5);
-            IClusterer hierarchicalClusterer = new HierarchicalClusterer(2,
-                    ClusteringMethod.singleLink);
+            DataStream dataStream = new DataStream("us-census.txt", 1200);
+
             IDistanceMeasure hammingDistance = new HammingDistance(
                     dataStream.getDimInformation().copy());
+
+            TerminateOption terminateOption =
+                    new MinDistanceTerminationOption(9);
+
+            IClusterer hierarchicalClusterer = new HierarchicalClusterer
+                    (terminateOption, new SingleLinkageClusteringMethod());
+
 
             List<Point> points = new ArrayList<>();
 
             int counter = 0;
-            while (dataStream.hasNext() && counter++ < 5) {
+            while (dataStream.hasNext() && counter++ < 1000) {
                 points.add(new Point(dataStream.next().Values, counter));
             }
 
@@ -56,14 +64,14 @@ public class HierarchicalTest extends TestCase {
 
             System.out.println("Time elapsed: : "
                     + stopwatch.stop().elapsed(TimeUnit.SECONDS));
-            System.out.println("Cluster count: " + cluster.size());
+            System.out.println("cluster count: " + cluster.size());
             System.out.println("Point count: " + cluster.numPoints());
 
             Map<Long, Point> pointMap = new HashMap<>();
             cluster.values().forEach(cl -> cl.getClusterPoints()
                     .forEach(point -> pointMap.put(point.Id, point)));
 
-            System.out.println("Unique Points: " + pointMap.size());
+            System.out.println("Unique points: " + pointMap.size());
 
             IPerformanceMeasure performanceMeasure = new
                     SilhouetteCoefficient(cluster, points, hammingDistance);

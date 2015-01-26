@@ -1,4 +1,4 @@
-package org.meyerlab.nopence.clustering.algorithms.Points;
+package org.meyerlab.nopence.clustering.algorithms.points;
 
 import net.openhft.koloboke.collect.map.hash.HashIntDoubleMaps;
 

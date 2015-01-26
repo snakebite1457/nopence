@@ -29,7 +29,7 @@ public class PrtaParserConstants {
     public static final String VAR_HIST_ELEMENT_LABEL_SHORT = "LabelShort";
     public static final String VAR_HIST_ELEMENT_LABEL_LONG = "LabelLong";
     public static final String VAR_HIST_ELEMENT_LABEL_LONG_TEXT = "";
-    public static final String VAR_HIST_ELEMENT_LABEL_CLUSTER = "Cluster";
+    public static final String VAR_HIST_ELEMENT_LABEL_CLUSTER = "cluster";
     public static final String VAR_HIST_ELEMENT_LABEL_ADDS = "Adds";
     public static final String VAR_HIST_ELEMENT_LABEL_ADDS_TEXT = "Additional Information";
     public static final String VAR_HIST_ELEMENT_LABEL_ORDINALID = "OrdinalId";

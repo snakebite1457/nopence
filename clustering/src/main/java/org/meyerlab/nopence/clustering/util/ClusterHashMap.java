@@ -1,6 +1,6 @@
 package org.meyerlab.nopence.clustering.util;
 
-import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
+import org.meyerlab.nopence.clustering.util.cluster.Cluster;
 
 import java.util.HashMap;
 

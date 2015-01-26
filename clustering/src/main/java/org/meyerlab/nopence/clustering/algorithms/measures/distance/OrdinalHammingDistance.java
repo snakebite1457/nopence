@@ -3,7 +3,7 @@ package org.meyerlab.nopence.clustering.algorithms.measures.distance;
 import net.openhft.koloboke.collect.set.hash.HashIntSets;
 import org.meyerlab.nopence.clustering.DimensionInformation;
 import org.meyerlab.nopence.clustering.DimensionType;
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
 
 import java.util.List;
 import java.util.Set;

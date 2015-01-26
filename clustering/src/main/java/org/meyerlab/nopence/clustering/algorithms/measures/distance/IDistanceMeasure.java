@@ -1,6 +1,6 @@
 package org.meyerlab.nopence.clustering.algorithms.measures.distance;
 
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
 
 /**
  * @author Dennis Meyer

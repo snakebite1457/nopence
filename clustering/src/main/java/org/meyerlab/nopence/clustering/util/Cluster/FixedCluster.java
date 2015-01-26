@@ -1,6 +1,6 @@
-package org.meyerlab.nopence.clustering.util.Cluster;
+package org.meyerlab.nopence.clustering.util.cluster;
 
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

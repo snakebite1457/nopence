@@ -1,6 +1,6 @@
 package org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyEvents;
 
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.meyerlab.nopence.clustering.util.Clustering;
+package org.meyerlab.nopence.clustering.util.clustering;
 
 /**
  * @author Dennis Meyer
@@ -6,12 +6,12 @@ package org.meyerlab.nopence.clustering.util.Clustering;
 public class ClusterPairItem implements Comparable<ClusterPairItem> {
 
     private final ClusterPair _clusterPair;
-    private final long _hash;
+    private final String _hash;
     private boolean _removed = false;
 
     public ClusterPairItem(ClusterPair clusterPair) {
         _clusterPair = clusterPair;
-        _hash = ClusterPair.hashClusterPair(clusterPair);
+        _hash = ClusterPair.getHashCode(clusterPair);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class ClusterPairItem implements Comparable<ClusterPairItem> {
         return _clusterPair;
     }
 
-    public long getHash() {
+    public String getHash() {
         return _hash;
     }
 

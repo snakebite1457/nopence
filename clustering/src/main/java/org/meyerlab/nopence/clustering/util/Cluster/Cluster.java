@@ -1,7 +1,7 @@
-package org.meyerlab.nopence.clustering.util.Cluster;
+package org.meyerlab.nopence.clustering.util.cluster;
 
 import net.openhft.koloboke.collect.map.hash.HashLongObjMaps;
-import org.meyerlab.nopence.clustering.algorithms.Points.Point;
+import org.meyerlab.nopence.clustering.algorithms.points.Point;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 
 import java.util.List;
@@ -76,8 +76,12 @@ public abstract class Cluster {
         return _points.containsKey(_seedStateId);
     }
 
-    public void merge(Cluster cluster, IDistanceMeasure distanceMeasure) {
+    public void merge(Cluster cluster) {
         _points.putAll(cluster._points);
+    }
+
+    public Point getPoint(long pointId) {
+        return _points.get(pointId);
     }
 
     @Override
@@ -103,11 +107,11 @@ public abstract class Cluster {
     @Override
     public String toString() {
         StringBuilder cluster = new StringBuilder();
-        cluster.append("Cluster: " + _clusterId);
+        cluster.append("cluster: " + _clusterId);
         cluster.append("\n");
-        cluster.append("Number of Points: " + numPoints());
+        cluster.append("Number of points: " + numPoints());
         cluster.append("\n");
-        cluster.append("Cluster seed id: " + getClusterSeed().Id);
+        cluster.append("cluster seed id: " + getClusterSeed().Id);
         cluster.append("\n");
 
         for (Long key : _points.keySet()) {
