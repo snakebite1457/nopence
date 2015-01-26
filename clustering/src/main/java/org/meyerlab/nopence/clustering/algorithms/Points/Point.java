@@ -20,4 +20,21 @@ public class Point {
     public Point copy() {
         return new Point(Values, Id);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder pointStringBuilder = new StringBuilder();
+        pointStringBuilder.append("Point Id: " + Id);
+        pointStringBuilder.append("\n");
+        pointStringBuilder.append("Values");
+        pointStringBuilder.append("\n");
+
+        for (Map.Entry<Integer, Double> entry : Values.entrySet()) {
+            pointStringBuilder.append("Value Id: " + entry.getKey());
+            pointStringBuilder.append("; ");
+            pointStringBuilder.append("Value: " + entry.getValue());
+            pointStringBuilder.append("\n");
+        }
+        return pointStringBuilder.toString();
+    }
 }

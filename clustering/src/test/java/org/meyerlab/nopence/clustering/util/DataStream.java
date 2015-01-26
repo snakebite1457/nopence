@@ -18,11 +18,11 @@ import java.util.stream.IntStream;
  */
 public class DataStream {
 
-    private static URL _resourceFile;
-    private static long _numInstances;
-    private static long _currentPosition;
-    private static BufferedReader _bufferedReader;
-    private static DimensionInformation _dimensionInformation;
+    private URL _resourceFile;
+    private long _numInstances;
+    private long _currentPosition;
+    private BufferedReader _bufferedReader;
+    private DimensionInformation _dimensionInformation;
 
 
     public DataStream(String resourceName)
@@ -46,7 +46,7 @@ public class DataStream {
         init();
     }
 
-    private static int countLines(File file) throws IOException {
+    private int countLines(File file) throws IOException {
 
         return Files.readLines(file,
                 Charset.forName("UTF-8"),
@@ -114,5 +114,14 @@ public class DataStream {
         }
 
         return null;
+    }
+
+    public void dispose() {
+        try {
+            _bufferedReader.close();
+            _dimensionInformation = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

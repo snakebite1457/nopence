@@ -35,24 +35,24 @@ public class HierarchicalTest extends TestCase {
 
             Stopwatch stopwatch = Stopwatch.createStarted();
 
-            DataStream dataStream = new DataStream("us-census.txt", 8000);
-            IClusterer dyscClusterer = new HierarchicalClusterer(20,
-                    ClusteringMethod.averageLink);
+            DataStream dataStream = new DataStream("hierarchical-test.txt", 5);
+            IClusterer hierarchicalClusterer = new HierarchicalClusterer(2,
+                    ClusteringMethod.singleLink);
             IDistanceMeasure hammingDistance = new HammingDistance(
                     dataStream.getDimInformation().copy());
 
             List<Point> points = new ArrayList<>();
 
             int counter = 0;
-            while (dataStream.hasNext() && counter++ < 1000) {
+            while (dataStream.hasNext() && counter++ < 5) {
                 points.add(new Point(dataStream.next().Values, counter));
             }
 
-            dyscClusterer.buildClusterer(points, hammingDistance);
+            hierarchicalClusterer.buildClusterer(points, hammingDistance);
 
-            dyscClusterer.start();
+            hierarchicalClusterer.start();
 
-            ClusterHashMap<Cluster> cluster = dyscClusterer.getCluster();
+            ClusterHashMap<Cluster> cluster = hierarchicalClusterer.getCluster();
 
             System.out.println("Time elapsed: : "
                     + stopwatch.stop().elapsed(TimeUnit.SECONDS));

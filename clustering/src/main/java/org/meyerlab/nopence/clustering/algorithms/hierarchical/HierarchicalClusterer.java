@@ -2,16 +2,13 @@ package org.meyerlab.nopence.clustering.algorithms.hierarchical;
 
 import org.meyerlab.nopence.clustering.IClusterer;
 import org.meyerlab.nopence.clustering.algorithms.Points.Point;
-import org.meyerlab.nopence.clustering.algorithms.measures.performance.IPerformanceMeasure;
-import org.meyerlab.nopence.clustering.algorithms.measures.performance.SilhouetteCoefficient;
 import org.meyerlab.nopence.clustering.util.Cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
 import org.meyerlab.nopence.clustering.util.ClusteringMethod;
-import org.meyerlab.nopence.clustering.util.DistanceMatrix;
+import org.meyerlab.nopence.clustering.util.Clustering.DistanceMatrix;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Dennis Meyer
@@ -21,10 +18,6 @@ public class HierarchicalClusterer implements IClusterer {
     private DistanceMatrix _distanceMatrix;
     private int _terminateClusterSize;
     private ClusteringMethod _clusteringMethod;
-    private IDistanceMeasure _distanceMeasure;
-
-    private List<Point> _points;
-
 
     public HierarchicalClusterer(int terminateClusterSize,
                                  ClusteringMethod clusteringMethod) {
@@ -35,11 +28,9 @@ public class HierarchicalClusterer implements IClusterer {
     @Override
     public void buildClusterer(List<Point> points,
                                IDistanceMeasure distanceMeasure) {
+
         _distanceMatrix = new DistanceMatrix(
                 points, distanceMeasure, _clusteringMethod);
-
-        _distanceMeasure = distanceMeasure;
-        _points = points;
     }
 
     @Override

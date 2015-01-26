@@ -15,6 +15,9 @@ import java.nio.charset.Charset;
  */
 public class Helper {
 
+    private static final int intPrime = 179426549;
+    private static final long longPrime = 32416190071l;
+
     public static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
     }
@@ -92,5 +95,13 @@ public class Helper {
 
         bar.append("]   ").append(percent).append("%");
         System.out.print("\r" + bar.toString());
+    }
+
+    public static int createHash(int x, int y) {
+        return x * intPrime + y;
+    }
+
+    public static long createHash(long x, long y) {
+        return x * longPrime + y;
     }
 }

@@ -99,4 +99,22 @@ public abstract class Cluster {
 
         return false;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder cluster = new StringBuilder();
+        cluster.append("Cluster: " + _clusterId);
+        cluster.append("\n");
+        cluster.append("Number of Points: " + numPoints());
+        cluster.append("\n");
+        cluster.append("Cluster seed id: " + getClusterSeed().Id);
+        cluster.append("\n");
+
+        for (Long key : _points.keySet()) {
+            cluster.append(_points.get(key));
+            cluster.append("\n");
+        }
+
+        return cluster.toString();
+    }
 }

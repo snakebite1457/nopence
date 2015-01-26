@@ -31,43 +31,55 @@ public class DyscTest extends TestCase {
     public void testDysc() {
         try {
 
-            Stopwatch stopwatch = Stopwatch.createStarted();
+            int roundCounter = 0;
+            for (int i = 10000; i < 2000000; i += (10000 * ++roundCounter)) {
+                System.out.println("Current Point: " + i);
 
-            DataStream dataStream = new DataStream("us-census.txt", 800000);
-            Dysc dyscClusterer = new Dysc(35, 400, 100, 800);
-            IDistanceMeasure hammingDistance = new HammingDistance(
-                    dataStream.getDimInformation().copy());
+                DataStream dataStream = new DataStream("us-census.txt", i);
 
-            List<Point> points = new ArrayList<>();
+                Stopwatch stopwatch = Stopwatch.createStarted();
 
-            int counter = 0;
-            while (dataStream.hasNext() && counter++ < 750000) {
-                points.add(new Point(dataStream.next().Values, counter));
+                Dysc dyscClusterer = new Dysc(15, 400, 100, 800);
+                IDistanceMeasure hammingDistance = new HammingDistance(
+                        dataStream.getDimInformation().copy());
+
+                List<Point> points = new ArrayList<>();
+
+                int counter = 0;
+                while (dataStream.hasNext() && counter++ < i) {
+                    points.add(new Point(dataStream.next().Values, counter));
+                }
+
+                dyscClusterer.buildClusterer(points, hammingDistance);
+
+                dyscClusterer.start();
+
+                ClusterHashMap<Cluster> cluster = dyscClusterer.getCluster();
+
+                System.out.println("Time elapsed: : "
+                        + stopwatch.stop().elapsed(TimeUnit.SECONDS));
+                System.out.println("Cluster count: " + cluster.size());
+                System.out.println("Point count: " + cluster.numPoints());
+
+                Map<Long, Point> pointMap = new HashMap<>();
+                cluster.values().forEach(cl -> cl.getClusterPoints()
+                        .forEach(point -> pointMap.put(point.Id, point)));
+
+                System.out.println("Unique Points: " + pointMap.size() + "\n");
+
+                points = null;
+                dataStream.dispose();
+                dataStream = null;
             }
 
-            dyscClusterer.buildClusterer(points, hammingDistance);
 
-            dyscClusterer.start();
 
-            ClusterHashMap<Cluster> cluster = dyscClusterer.getCluster();
-
-            System.out.println("Time elapsed: : "
-                    + stopwatch.stop().elapsed(TimeUnit.SECONDS));
-            System.out.println("Cluster count: " + cluster.size());
-            System.out.println("Point count: " + cluster.numPoints());
-
-            Map<Long, Point> pointMap = new HashMap<>();
-            cluster.values().forEach(cl -> cl.getClusterPoints()
-                    .forEach(point -> pointMap.put(point.Id, point)));
-
-            System.out.println("Unique Points: " + pointMap.size());
-
-            IPerformanceMeasure performanceMeasure = new
+            /*IPerformanceMeasure performanceMeasure = new
                     SilhouetteCoefficient(cluster, points, hammingDistance);
 
             double performance = performanceMeasure.estimatePerformance();
 
-            System.out.println("Silhouette coeff: " + performance);
+            System.out.println("Silhouette coeff: " + performance);*/
 
         } catch (IOException e) {
             e.printStackTrace();

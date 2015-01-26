@@ -12,6 +12,7 @@ import org.meyerlab.nopence.clustering.algorithms.dysc.ConcurrencyWorkers.APrePe
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
 import org.meyerlab.nopence.clustering.util.WorkerHashMap;
+import org.omg.CORBA.Environment;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -45,7 +46,8 @@ public class Dysc implements IClusterer {
         _maxPointsInWorker = maxPointsInWorker;
         _maxClustersInWorker = maxClustersInWorker;
 
-        _executorService = Executors.newCachedThreadPool();
+        int cores = Runtime.getRuntime().availableProcessors();
+        _executorService = Executors.newFixedThreadPool(cores);
 
         _fixedWorkers = new WorkerHashMap<>();
         _pendingWorker = new WorkerHashMap<>();
