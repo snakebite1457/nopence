@@ -5,7 +5,7 @@ import org.meyerlab.nopence.clustering.algorithms.hierarchical.HierarchicalClust
 /**
  * @author Dennis Meyer
  */
-public class MinDistanceTerminationOption implements TerminateOption {
+public class MinDistanceTerminationOption implements ITerminateOption {
 
     private final double _maxDistance;
 

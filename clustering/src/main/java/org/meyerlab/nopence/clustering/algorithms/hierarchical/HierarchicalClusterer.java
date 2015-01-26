@@ -1,9 +1,9 @@
 package org.meyerlab.nopence.clustering.algorithms.hierarchical;
 
 import org.meyerlab.nopence.clustering.IClusterer;
-import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.ClusteringMethod;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.IClusteringMethod;
 import org.meyerlab.nopence.clustering.algorithms.points.Point;
-import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.TerminateOption;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.ITerminateOption;
 import org.meyerlab.nopence.clustering.util.cluster.Cluster;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
@@ -17,11 +17,11 @@ import java.util.List;
 public class HierarchicalClusterer implements IClusterer {
 
     private DistanceMatrix _distanceMatrix;
-    private final TerminateOption _terminateOption;
-    private final ClusteringMethod _clusteringMethod;
+    private final ITerminateOption _terminateOption;
+    private final IClusteringMethod _clusteringMethod;
 
-    public HierarchicalClusterer(TerminateOption terminateOption,
-                                 ClusteringMethod clusteringMethod) {
+    public HierarchicalClusterer(ITerminateOption terminateOption,
+                                 IClusteringMethod clusteringMethod) {
         _terminateOption = terminateOption;
         _clusteringMethod = clusteringMethod;
     }

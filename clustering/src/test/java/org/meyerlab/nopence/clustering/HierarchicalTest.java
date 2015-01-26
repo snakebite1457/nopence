@@ -3,9 +3,8 @@ package org.meyerlab.nopence.clustering;
 import com.google.common.base.Stopwatch;
 import junit.framework.TestCase;
 import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.SingleLinkageClusteringMethod;
-import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.ClusterSizeTerminateOption;
 import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.MinDistanceTerminationOption;
-import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.TerminateOption;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.terminateOptions.ITerminateOption;
 import org.meyerlab.nopence.clustering.algorithms.points.Point;
 import org.meyerlab.nopence.clustering.algorithms.hierarchical.HierarchicalClusterer;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.HammingDistance;
@@ -42,7 +41,7 @@ public class HierarchicalTest extends TestCase {
             IDistanceMeasure hammingDistance = new HammingDistance(
                     dataStream.getDimInformation().copy());
 
-            TerminateOption terminateOption =
+            ITerminateOption terminateOption =
                     new MinDistanceTerminationOption(9);
 
             IClusterer hierarchicalClusterer = new HierarchicalClusterer

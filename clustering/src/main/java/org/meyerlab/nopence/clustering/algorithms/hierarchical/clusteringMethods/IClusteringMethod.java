@@ -6,7 +6,7 @@ import org.meyerlab.nopence.clustering.util.clustering.DistanceMatrix;
 /**
  * @author Dennis Meyer
  */
-public interface ClusteringMethod {
+public interface IClusteringMethod {
 
     public double calculateDistance(Cluster first,
                                     Cluster second,

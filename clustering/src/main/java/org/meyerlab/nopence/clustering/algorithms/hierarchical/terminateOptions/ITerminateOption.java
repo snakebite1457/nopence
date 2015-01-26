@@ -5,7 +5,7 @@ import org.meyerlab.nopence.clustering.algorithms.hierarchical.HierarchicalClust
 /**
  * @author Dennis Meyer
  */
-public interface TerminateOption {
+public interface ITerminateOption {
 
     public boolean checkTerminated(HierarchicalClusterer clusterer);
 }

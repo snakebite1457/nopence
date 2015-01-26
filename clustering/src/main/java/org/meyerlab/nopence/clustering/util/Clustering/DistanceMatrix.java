@@ -2,14 +2,13 @@ package org.meyerlab.nopence.clustering.util.clustering;
 
 import net.openhft.koloboke.collect.map.hash.HashObjDoubleMaps;
 import net.openhft.koloboke.collect.map.hash.HashObjObjMaps;
-import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.ClusteringMethod;
+import org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods.IClusteringMethod;
 import org.meyerlab.nopence.clustering.algorithms.measures.distance.IDistanceMeasure;
 import org.meyerlab.nopence.clustering.algorithms.points.Point;
 import org.meyerlab.nopence.clustering.util.ClusterHashMap;
 import org.meyerlab.nopence.clustering.util.ClusteringHelper;
 import org.meyerlab.nopence.clustering.util.cluster.Cluster;
 import org.meyerlab.nopence.clustering.util.cluster.SimpleCluster;
-import org.meyerlab.nopence.utils.Helper;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class DistanceMatrix {
 
     private ClusterHashMap<SimpleCluster> _currentCluster;
     private IDistanceMeasure _distanceMeasure;
-    private ClusteringMethod _clusteringMethod;
+    private IClusteringMethod _clusteringMethod;
 
     private PriorityQueue<ClusterPairItem> _clusterDistances;
     private Map<String, ClusterPairItem> _clusterPairItems;
@@ -31,7 +30,7 @@ public class DistanceMatrix {
 
     public DistanceMatrix(List<Point> points,
                           IDistanceMeasure distanceMeasure,
-                          ClusteringMethod clusteringMethod) {
+                          IClusteringMethod clusteringMethod) {
 
         _currentCluster = new ClusterHashMap<>();
         _distanceMeasure = distanceMeasure;

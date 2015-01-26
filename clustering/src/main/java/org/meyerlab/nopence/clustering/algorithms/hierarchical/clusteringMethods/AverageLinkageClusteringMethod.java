@@ -1,14 +1,13 @@
 package org.meyerlab.nopence.clustering.algorithms.hierarchical.clusteringMethods;
 
 import org.meyerlab.nopence.clustering.algorithms.points.Point;
-import org.meyerlab.nopence.clustering.util.ClusteringHelper;
 import org.meyerlab.nopence.clustering.util.cluster.Cluster;
 import org.meyerlab.nopence.clustering.util.clustering.DistanceMatrix;
 
 /**
  * @author Dennis Meyer
  */
-public class AverageLinkageClusteringMethod implements ClusteringMethod {
+public class AverageLinkageClusteringMethod implements IClusteringMethod {
 
 
     @Override

@@ -5,7 +5,7 @@ import org.meyerlab.nopence.clustering.algorithms.hierarchical.HierarchicalClust
 /**
  * @author Dennis Meyer
  */
-public class ClusterSizeTerminateOption implements  TerminateOption {
+public class ClusterSizeTerminateOption implements ITerminateOption {
 
     private final int _minClusterSize;
 
