@@ -13,14 +13,12 @@ import java.util.Set;
  */
 public class Instance implements Comparable<Instance> {
 
-    private Date _beginDate;
-    private Date _endDate;
+    private Date _observationDate;
 
     private Set<Integer> _events;
 
-    public Instance(Date beginDate, Date endDate) {
-        _beginDate = (Date) beginDate.clone();
-        _endDate = (Date) endDate.clone();
+    public Instance(Date observationDate) {
+        _observationDate = (Date) observationDate.clone();
         _events = new HashSet<>();
     }
 
@@ -32,11 +30,12 @@ public class Instance implements Comparable<Instance> {
         attributeList.forEach(attr -> _events.add(attr.getId()));
     }
 
-    public Date getBeginDate() {
-        return (Date) _beginDate.clone();
+    public Date getObservationDate() {
+        return (Date) _observationDate.clone();
     }
 
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -47,16 +46,17 @@ public class Instance implements Comparable<Instance> {
         }
 
         Instance other = (Instance) obj;
-        return _beginDate.equals(other._beginDate);
+        return _observationDate.equals(other._observationDate);
     }
 
+    @Override
     public int hashCode() {
-        return 31 * _beginDate.hashCode();
+        return 31 * _observationDate.hashCode();
     }
 
     @Override
     public int compareTo(Instance other) {
-        return _beginDate.compareTo(other._beginDate);
+        return _observationDate.compareTo(other._observationDate);
     }
 
     public void appendText(long time, StringBuilder sb) {

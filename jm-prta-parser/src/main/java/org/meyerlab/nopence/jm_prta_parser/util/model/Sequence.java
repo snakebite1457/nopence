@@ -36,11 +36,11 @@ public class Sequence {
         StringBuilder builder = new StringBuilder();
         builder.append("seqId ").append(_id).append("\n");
 
-        Date firstBeginDate = _timeEventMap.first().getBeginDate();
+        Date firstBeginDate = _timeEventMap.first().getObservationDate();
         while (!_timeEventMap.isEmpty()) {
             Instance inst = _timeEventMap.pollFirst();
             long daysDiff = Days.daysBetween(new DateTime(firstBeginDate),
-                    new DateTime((inst.getBeginDate()))).getDays();
+                    new DateTime((inst.getObservationDate()))).getDays();
 
             inst.appendText(daysDiff, builder);
         }

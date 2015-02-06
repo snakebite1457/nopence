@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import org.meyerlab.nopence.gov_browser_parser.util.*;
+import org.meyerlab.nopence.util.FileHelper;
 import org.meyerlab.nopence.utils.Constants;
 import org.meyerlab.nopence.utils.Helper;
 import org.meyerlab.nopence.utils.exceptions.DirNotValidException;
@@ -12,7 +13,6 @@ import org.meyerlab.nopence.utils.exceptions.FileNotValidException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Dennis Meyer

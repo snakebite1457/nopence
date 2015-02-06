@@ -89,12 +89,10 @@ public class DataParser {
             long personId = Long.parseLong(
                     splittedLine[Option.getInstance().getColPersonId()]);
 
-            Date spellBeginDate = _dateFormat.parse(
-                    splittedLine[Option.getInstance().getColSpellBegin()]);
-            Date spellEndDate = _dateFormat.parse(
-                    splittedLine[Option.getInstance().getColSpellEnd()]);
+            Date observationDate = _dateFormat.parse(
+                    splittedLine[Option.getInstance().getColObservationDate()]);
 
-            Instance instance = new Instance(spellBeginDate, spellEndDate);
+            Instance instance = new Instance(observationDate);
             for (int i = 0; i < splittedLine.length; i++) {
                 try {
                     double value = Double.parseDouble(splittedLine[i]);

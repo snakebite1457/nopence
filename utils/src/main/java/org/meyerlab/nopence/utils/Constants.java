@@ -7,7 +7,7 @@ public class Constants {
 
     public static final String FILE_ENCODING = "UTF-8";
     public static final String FILE_EXTENSION_XML = "xml";
-    public static final String FILE_CSV_SEPARATION = ";";
+    public static final String FILE_CSV_SEPARATION = ",";
 
 
     public static final String EX_FILE_NOT_VALID = "The File %s can not be found or the given file is a directory";

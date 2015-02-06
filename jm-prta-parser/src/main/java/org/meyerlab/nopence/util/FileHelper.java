@@ -1,4 +1,4 @@
-package org.meyerlab.nopence.gov_browser_parser.util;
+package org.meyerlab.nopence.util;
 
 
 import org.meyerlab.nopence.utils.Constants;

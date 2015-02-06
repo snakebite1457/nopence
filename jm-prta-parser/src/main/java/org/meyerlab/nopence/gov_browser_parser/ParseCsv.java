@@ -6,9 +6,9 @@ import com.google.gson.JsonSyntaxException;
 import net.sf.uadetector.OperatingSystem;
 import net.sf.uadetector.OperatingSystemFamily;
 import net.sf.uadetector.ReadableUserAgent;
-import net.sf.uadetector.UserAgentStringParser;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.meyerlab.nopence.gov_browser_parser.util.*;
+import org.meyerlab.nopence.util.CsvFileHelper;
+import org.meyerlab.nopence.util.FileHelper;
 import org.meyerlab.nopence.utils.Constants;
 import org.meyerlab.nopence.utils.Helper;
 import org.meyerlab.nopence.utils.exceptions.DirNotValidException;
@@ -16,8 +16,6 @@ import org.meyerlab.nopence.utils.exceptions.FileNotValidException;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Period;
 import java.util.*;
 
 /**
@@ -38,7 +36,8 @@ public class ParseCsv {
         }
 
         FileHelper fileHelper = new FileHelper();
-        CsvFileHelper csvFileHelper = new CsvFileHelper();
+        CsvFileHelper csvFileHelper = new CsvFileHelper(GovOption
+                .MaxBufferSize, GovOption.OutputFile);
         csvFileHelper.addHeader(createOsHeader());
 
         try {

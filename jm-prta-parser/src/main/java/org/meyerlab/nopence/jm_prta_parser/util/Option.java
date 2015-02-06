@@ -28,8 +28,7 @@ public class Option {
     private static int _instancesFileLineCount;
 
     private static int _colPersonId;
-    private static int _colSpellBegin;
-    private static int _colSpellEnd;
+    private static int _colObservationDate;
     private static String _dateFormat;
 
     private static boolean debugMode = true;
@@ -93,8 +92,7 @@ public class Option {
                 File.separator + "properties.xml"));
 
         _colPersonId = Integer.parseInt(properties.getProperty("columnPersonId"));
-        _colSpellBegin = Integer.parseInt(properties.getProperty("columnSpellBegin"));
-        _colSpellEnd = Integer.parseInt(properties.getProperty("columnSpellEnd"));
+        _colObservationDate = Integer.parseInt(properties.getProperty("columnObservationDate"));
         _dateFormat = properties.getProperty("dateFormat");
     }
 
@@ -106,12 +104,8 @@ public class Option {
         return _colPersonId;
     }
 
-    public int getColSpellBegin() {
-        return _colSpellBegin;
-    }
-
-    public int getColSpellEnd() {
-        return _colSpellEnd;
+    public int getColObservationDate() {
+        return _colObservationDate;
     }
 
     public String getPathAttrInfoDir() {

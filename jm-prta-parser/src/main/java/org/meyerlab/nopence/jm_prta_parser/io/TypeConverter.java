@@ -222,10 +222,10 @@ public class TypeConverter {
                     continue;
                 }
 
-                String[] lineArray = line.split(";");
+                String[] lineArray = line.split(Constants.FILE_CSV_SEPARATION);
 
                 for (NumericAttribute attr : numericAttrs) {
-                    String strValue = lineArray[attr.getId()].replace(",", ".");
+                    String strValue = lineArray[attr.getId()];
                     if (!Helper.isNumeric(strValue)) {
                         continue;
                     }

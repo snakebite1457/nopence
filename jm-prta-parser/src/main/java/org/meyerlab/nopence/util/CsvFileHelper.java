@@ -1,6 +1,7 @@
-package org.meyerlab.nopence.gov_browser_parser.util;
+package org.meyerlab.nopence.util;
 
 import com.google.common.base.Stopwatch;
+import org.meyerlab.nopence.gov_browser_parser.util.GovOption;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,10 +21,10 @@ public class CsvFileHelper {
     private long _bufferedInstances;
     private File _outputFile;
 
-    public CsvFileHelper() {
+    public CsvFileHelper(long bufferSize, String outputFile) {
         _listBuffer = new ArrayList<>();
-        _bufferSize = GovOption.MaxBufferSize;
-        _outputFile = new File(GovOption.OutputFile);
+        _bufferSize = bufferSize;
+        _outputFile = new File(outputFile);
         _bufferedInstances = 0;
     }
 
@@ -63,6 +64,8 @@ public class CsvFileHelper {
             e.printStackTrace();
         } finally {
             _listBuffer.clear();
+            _listBuffer = null;
+            _listBuffer = new ArrayList<>();
             _bufferedInstances = 0;
         }
 

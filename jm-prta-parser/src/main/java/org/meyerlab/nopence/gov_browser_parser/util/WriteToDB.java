@@ -3,6 +3,7 @@ package org.meyerlab.nopence.gov_browser_parser.util;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import org.meyerlab.nopence.util.FileHelper;
 import org.meyerlab.nopence.utils.Constants;
 import org.meyerlab.nopence.utils.Helper;
 import org.meyerlab.nopence.utils.exceptions.DirNotValidException;
