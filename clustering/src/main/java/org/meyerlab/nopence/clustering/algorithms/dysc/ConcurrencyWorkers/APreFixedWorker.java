@@ -68,9 +68,22 @@ public class APreFixedWorker extends APreWorker
     }
 
     @Override
+    public void reassignClusterSeed() {
+        _clusterMap.values()
+                .forEach(cluster -> cluster.reassignClusterSeed
+                        (_distanceMeasure));
+    }
+
+    @Override
     public APreCallbackEvent call() throws Exception {
-        APreCallbackEvent event =
-                calculateMinDistance(_inputEvent.Point);
+
+        APreCallbackEvent event = null;
+        if (_inputEvent.reassignClusterSeeds) {
+            System.out.println("Cluster seeds gets rearranged");
+            reassignClusterSeed();
+        } else {
+            event = calculateMinDistance(_inputEvent.Point);
+        }
 
         _doneSignal.countDown();
 

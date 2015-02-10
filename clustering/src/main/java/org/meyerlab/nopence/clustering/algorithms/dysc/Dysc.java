@@ -27,6 +27,7 @@ public class Dysc implements IClusterer {
 
     private int _maxClustersInWorker;
     private int _maxPointsInWorker;
+    private boolean _reassignClusterSeedsFinished;
 
     private WorkerHashMap<APreFixedWorker> _fixedWorkers;
     private WorkerHashMap<APrePendingWorker> _pendingWorker;
@@ -37,10 +38,12 @@ public class Dysc implements IClusterer {
     public Dysc(double epsilonSeedRange,
                 int maxPendingClusterSize,
                 int maxClustersInWorker,
-                int maxPointsInWorker) {
+                int maxPointsInWorker,
+                boolean reassignClusterSeedsAfterFinished) {
 
         _epsilonSeedRange = epsilonSeedRange;
         _maxPendingClusterSize = maxPendingClusterSize;
+        _reassignClusterSeedsFinished = reassignClusterSeedsAfterFinished;
 
         _maxPointsInWorker = maxPointsInWorker;
         _maxClustersInWorker = maxClustersInWorker;
@@ -60,7 +63,12 @@ public class Dysc implements IClusterer {
         _distanceMeasure = distanceMeasure;
     }
 
+    @Override
     public ClusterHashMap<Cluster> getCluster() {
+        if (_reassignClusterSeedsFinished) {
+            runFixedWorkerReassignClusterSeeds();
+        }
+
         ClusterHashMap<Cluster> clusters = new ClusterHashMap<>();
 
         _fixedWorkers.values()
@@ -155,6 +163,24 @@ public class Dysc implements IClusterer {
             }
 
         } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private boolean runFixedWorkerReassignClusterSeeds() {
+        CountDownLatch doneSignal = new CountDownLatch(_fixedWorkers.size());
+
+        for (APreFixedWorker worker : _fixedWorkers.values()) {
+            worker.setInputEvent(new APreInputEvent(), doneSignal);
+            _executorService.submit(worker);
+        }
+
+        try {
+            doneSignal.await();
+
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

@@ -37,7 +37,7 @@ public class DyscTest extends TestCase {
 
                 Stopwatch stopwatch = Stopwatch.createStarted();
 
-                Dysc dyscClusterer = new Dysc(15, 400, 100, 800);
+                Dysc dyscClusterer = new Dysc(15, 400, 100, 800, true);
                 IDistanceMeasure hammingDistance = new HammingDistance(
                         dataStream.getDimInformation().copy());
 

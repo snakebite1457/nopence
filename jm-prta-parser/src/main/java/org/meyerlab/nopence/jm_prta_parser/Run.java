@@ -33,7 +33,7 @@ public class Run {
 
     public static void main(String[] args) {
 
-        System.out.println("Converter process has started!\n");
+        System.out.println("Converter process has been started!\n");
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         try {

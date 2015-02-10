@@ -134,4 +134,12 @@ public class NumericAttribute extends Attribute {
     public int getNumDiscretizationBins() {
         return _numDiscretizationBins;
     }
+
+    public void addValueToDiscretization(double value) {
+        if (_discretization == null) {
+            return;
+        }
+
+        _discretization.addValue(value);
+    }
 }

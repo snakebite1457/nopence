@@ -35,6 +35,10 @@ public class SilhouetteCoefficient implements IPerformanceMeasure {
     @Override
     public double estimatePerformance() {
 
+        if (_clusters.size() == 1) {
+            return 1;
+        }
+
         /*List<ReassignWorker> worker = new ArrayList<>();
 
         CountDownLatch doneSignal = new CountDownLatch(_clusters.size());

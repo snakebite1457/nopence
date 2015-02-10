@@ -75,4 +75,14 @@ public class FileHelper {
         return _numberOfLines;
     }
 
+    public int getNumberOfReadLines() {
+        return _alreadyReadLines;
+    }
+
+    public void close() throws IOException {
+        _alreadyReadLines = 0;
+        _numberOfLines = 0;
+        _bufferedReader.close();
+    }
+
 }

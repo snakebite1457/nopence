@@ -15,7 +15,7 @@ public class MinDistanceTerminationOption implements ITerminateOption {
 
     @Override
     public boolean checkTerminated(HierarchicalClusterer clusterer) {
-        return clusterer.getCurrentClusterSize() > 1
-                &&  clusterer.getCurrentMinDistance() > _maxDistance;
+        return clusterer.getCurrentClusterSize() == 1
+                ||  clusterer.getCurrentMinDistance() > _maxDistance;
     }
 }

@@ -35,7 +35,8 @@ public class PrtaParserConstants {
     public static final String VAR_HIST_ELEMENT_LABEL_ORDINALID = "OrdinalId";
 
 
-    public static final int NUM_INST_FOR_DISCRETIZATION = 3000;
+    public static final int NUM_INST_FOR_DISCRETIZATION = 300000;
+    public static final int NUM_INST_FOR_FIND_MIN_MAX_DIS = 3000;
     public static final int NUM_DEFAULT_SEQ_BUFFER_SIZE = 25;
 
     public static final String ATTR_INFO_FILE_PREFIX = "Attribute-Information-";

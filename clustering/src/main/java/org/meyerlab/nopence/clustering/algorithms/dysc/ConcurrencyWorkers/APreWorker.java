@@ -66,6 +66,8 @@ public abstract class APreWorker {
 
     public abstract boolean containsPoint(long pointId);
 
+    public abstract void reassignClusterSeed();
+
     public void updateLimitReached() {
         _clusterLimitReached = numClusters() > _maxClusters;
     }

@@ -3,7 +3,6 @@ package org.meyerlab.nopence.jm_prta_parser.io;
 
 import org.kramerlab.carbon.util.discretization.Discretization;
 import org.kramerlab.carbon.util.discretization.DiscretizationType;
-
 import org.meyerlab.nopence.jm_prta_parser.attributes.Attribute;
 import org.meyerlab.nopence.jm_prta_parser.attributes.NominalAttribute;
 import org.meyerlab.nopence.jm_prta_parser.attributes.NumericAttribute;
@@ -12,12 +11,14 @@ import org.meyerlab.nopence.jm_prta_parser.converter.Converter;
 import org.meyerlab.nopence.jm_prta_parser.converter.NominalBinaryConverter;
 import org.meyerlab.nopence.jm_prta_parser.converter.NumericBinaryConverter;
 import org.meyerlab.nopence.jm_prta_parser.converter.OrdinalBinaryConverter;
-import org.meyerlab.nopence.jm_prta_parser.util.PrtaParserConstants;
 import org.meyerlab.nopence.jm_prta_parser.util.IntGenerator;
 import org.meyerlab.nopence.jm_prta_parser.util.Option;
+import org.meyerlab.nopence.jm_prta_parser.util.PrtaParserConstants;
 import org.meyerlab.nopence.jm_prta_parser.util.exceptions.AttrNotContainsValueException;
+import org.meyerlab.nopence.util.FileHelper;
 import org.meyerlab.nopence.utils.Constants;
 import org.meyerlab.nopence.utils.Helper;
+import org.meyerlab.nopence.utils.exceptions.FileNotValidException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -27,7 +28,8 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -198,26 +200,20 @@ public class TypeConverter {
      *
      * @param numericAttrs the numeric attributes
      */
-    private void setDiscretizationToAttrs(
-            ArrayList<NumericAttribute> numericAttrs) {
-
-        // key -> attr id; value -> list for minMax values for this attribute.
-        // 0 -> minValue; 1 -> maxValue
-        HashMap<Integer, List<Double>> minMaxAttr = new HashMap<>();
-
-        BufferedReader br = null;
+    private void setDiscretizationToAttrs(List<NumericAttribute> numericAttrs) {
         try {
+            initDiscretizations(numericAttrs);
 
-            br = new BufferedReader(new InputStreamReader(new
-                    FileInputStream(Option.getInstance().getPathDataFile()),
-                    Constants.FILE_ENCODING));
+            // Add values to the discretizations
 
-            // Skip header
-            br.readLine();
+            File instancesFile = new File(Option.getInstance().getPathDataFile());
+            FileHelper fileHelper = new FileHelper(instancesFile, true);
 
-            for (int counter = 0; counter <
-                    PrtaParserConstants.NUM_INST_FOR_DISCRETIZATION; counter++) {
-                String line = br.readLine();
+            fileHelper.reset(instancesFile, true);
+            while (fileHelper.getNumberOfReadLines() <=
+                    PrtaParserConstants.NUM_INST_FOR_DISCRETIZATION
+                    && fileHelper.hasNextLine()) {
+                String line = fileHelper.nextLine();
                 if (line == null) {
                     continue;
                 }
@@ -230,49 +226,80 @@ public class TypeConverter {
                         continue;
                     }
 
-                    double value = Double.parseDouble(strValue);
-                    if (minMaxAttr.containsKey(attr.getId())) {
-                        List<Double> minMax = minMaxAttr.get(attr.getId());
-
-                        // Update min max values
-                        if (minMax.get(0) > value) {
-                            minMax.set(0, value);
-                        } else if (minMax.get(1) < value) {
-                            minMax.set(1, value);
-                        }
-
-                        minMaxAttr.put(attr.getId(), minMax);
-                    } else {
-                        ArrayList<Double> minMax = new ArrayList<Double>() {{
-                            add(0, value);
-                            add(1, value);
-                        }};
-
-                        minMaxAttr.put(attr.getId(), minMax);
-                    }
+                    attr.addValueToDiscretization(Double.parseDouble(strValue));
                 }
             }
 
-            numericAttrs.forEach(attr -> attr.setDiscretization(
-                    new Discretization(10,
-                            attr.getDiscretizationType(),
-                            minMaxAttr.get(attr.getId()).get(0),
-                            minMaxAttr.get(attr.getId()).get(1))));
+            fileHelper.close();
 
-        } catch (IOException e) {
+        } catch (IOException | FileNotValidException e) {
             e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        }
+    }
+
+    private void initDiscretizations(List<NumericAttribute> numericAttrs)
+            throws IOException, FileNotValidException {
+
+        // key -> attr id; value -> list for minMax values for this attribute.
+        // 0 -> minValue; 1 -> maxValue
+        Map<Integer, List<Double>> minMaxAttr = new HashMap<>();
+
+        File instancesFile = new File(Option.getInstance().getPathDataFile());
+        FileHelper fileHelper = new FileHelper(instancesFile, true);
+
+        // Skip header
+        fileHelper.nextLine();
+
+        // Find min, max value for every numeric attribute
+        while (fileHelper.getNumberOfReadLines() <=
+                PrtaParserConstants.NUM_INST_FOR_FIND_MIN_MAX_DIS
+                && fileHelper.hasNextLine()) {
+
+            String line = fileHelper.nextLine();
+            if (line == null) {
+                continue;
+            }
+
+            String[] lineArray = line.split(Constants.FILE_CSV_SEPARATION);
+
+            for (NumericAttribute attr : numericAttrs) {
+                String strValue = lineArray[attr.getId()];
+                if (!Helper.isNumeric(strValue)) {
+                    continue;
+                }
+
+                double value = Double.parseDouble(strValue);
+                if (minMaxAttr.containsKey(attr.getId())) {
+                    List<Double> minMax = minMaxAttr.get(attr.getId());
+
+                    // Update min max values
+                    if (minMax.get(0) > value) {
+                        minMax.set(0, value);
+                    } else if (minMax.get(1) < value) {
+                        minMax.set(1, value);
+                    }
+
+                    minMaxAttr.put(attr.getId(), minMax);
+                } else {
+                    ArrayList<Double> minMax = new ArrayList<Double>() {{
+                        add(0, value);
+                        add(1, value);
+                    }};
+
+                    minMaxAttr.put(attr.getId(), minMax);
                 }
             }
         }
 
-    }
+        // Init discretizations
+        numericAttrs.forEach(attr -> attr.setDiscretization(
+                new Discretization(attr.getNumDiscretizationBins(),
+                        attr.getDiscretizationType(),
+                        minMaxAttr.get(attr.getId()).get(0),
+                        minMaxAttr.get(attr.getId()).get(1))));
 
+        fileHelper.close();
+    }
 
     private void createDiscreteConverter(Node attributeNode) {
         NamedNodeMap nodeAttrs = attributeNode.getAttributes();

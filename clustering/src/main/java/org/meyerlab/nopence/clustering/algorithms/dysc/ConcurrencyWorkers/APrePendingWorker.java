@@ -76,6 +76,13 @@ public class APrePendingWorker extends APreWorker
         return _clusterMap.containsPoint(pointId);
     }
 
+    @Override
+    public void reassignClusterSeed() {
+        _clusterMap.values()
+                .forEach(cluster -> cluster.reassignClusterSeed
+                        (_distanceMeasure));
+    }
+
     private List<Point> removePoints(List<Long> pointIds) {
         _clusterMap.values()
                 .forEach(cluster ->
