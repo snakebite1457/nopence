@@ -226,12 +226,19 @@ public class DataParser {
         ordinalIdElement.appendChild(
                 document.createTextNode(String.valueOf(ordinalId)));
 
+        // Create weight
+        Element weightElement =
+                document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_WEIGHT);
+        weightElement.appendChild(
+                document.createTextNode(String.valueOf(curConvertedAttr.getWeight())));
+
         varElement.appendChild(varIdElement);
         varElement.appendChild(labelShortElement);
         varElement.appendChild(labelLongElement);
         varElement.appendChild(clusterElement);
         varElement.appendChild(addsElement);
         varElement.appendChild(ordinalIdElement);
+        varElement.appendChild(weightElement);
     }
 
 

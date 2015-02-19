@@ -7,9 +7,9 @@ import org.meyerlab.nopence.clustering.algorithms.hierarchical.HierarchicalClust
  */
 public class ClusterSizeTerminateOption implements ITerminateOption {
 
-    private final int _minClusterSize;
+    private final double _minClusterSize;
 
-    public ClusterSizeTerminateOption(int minClusterSize) {
+    public ClusterSizeTerminateOption(double minClusterSize) {
         _minClusterSize = minClusterSize;
     }
 

@@ -109,7 +109,8 @@ public class NumericBinaryConverter extends Converter {
         _attrMapping.put(i, mappedAttrIds);
 
         convertedAttrs.put(newAttrId, new BinaryAttribute(newAttrId, newAttrName,
-                binValues, _numericAttribute.getConvertedType()));
+                binValues, _numericAttribute.getConvertedType(),
+                _numericAttribute.getWeight()));
         originalAttrTypeByConvertedId.put(newAttrId, _numericAttribute);
     }
 

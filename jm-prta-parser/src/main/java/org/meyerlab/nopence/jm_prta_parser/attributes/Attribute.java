@@ -10,11 +10,13 @@ public abstract class Attribute {
     protected int _id;
     protected String _name;
     protected Type _convertedType;
+    protected double _weight;
 
-    public Attribute(int id, String name, Type convertedType) {
+    public Attribute(int id, String name, Type convertedType, double weight) {
         _id = id;
         _name = name;
         _convertedType = convertedType;
+        _weight = weight;
     }
 
     /**
@@ -40,6 +42,10 @@ public abstract class Attribute {
 
     public String getName() {
         return _name;
+    }
+
+    public double getWeight() {
+        return _weight;
     }
 
     public enum Type {

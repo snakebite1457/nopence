@@ -53,7 +53,7 @@ public class NominalBinaryConverter extends Converter {
 
         BinaryAttribute binAttr =
                 new BinaryAttribute(attrId, name,
-                        binValues, Attribute.Type.nominal);
+                        binValues, Attribute.Type.nominal, _nomAttr.getWeight());
 
         convertedAttrs.put(attrId, binAttr);
         originalAttrTypeByConvertedId.put(attrId, _nomAttr);

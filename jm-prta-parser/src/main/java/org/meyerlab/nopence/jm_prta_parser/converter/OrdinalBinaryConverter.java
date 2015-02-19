@@ -82,7 +82,7 @@ public class OrdinalBinaryConverter extends Converter {
 
         BinaryAttribute binAttr =
                 new BinaryAttribute(attrId, ordinalName,
-                        binValues, Attribute.Type.ordinal);
+                        binValues, Attribute.Type.ordinal, _ordinalAttr.getWeight());
 
 
         convertedAttrs.put(attrId, binAttr);

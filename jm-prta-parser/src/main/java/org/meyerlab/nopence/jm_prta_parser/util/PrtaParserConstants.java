@@ -12,6 +12,7 @@ public class PrtaParserConstants {
     public static final String ATTR_INFO_ATTR_NODE_NAME = "name";
     public static final String ATTR_INFO_ATTR_NODE_TYPE = "type";
     public static final String ATTR_INFO_ATTR_NODE_NAME_AS_PREFIX = "nameAsPrefix";
+    public static final String ATTR_INFO_ATTR_NODE_WEIGHT = "weight";
 
     public static final String ATTR_INFO_VALS_ROOT = "values";
 
@@ -33,6 +34,7 @@ public class PrtaParserConstants {
     public static final String VAR_HIST_ELEMENT_LABEL_ADDS = "Adds";
     public static final String VAR_HIST_ELEMENT_LABEL_ADDS_TEXT = "Additional Information";
     public static final String VAR_HIST_ELEMENT_LABEL_ORDINALID = "OrdinalId";
+    public static final String VAR_HIST_ELEMENT_LABEL_WEIGHT = "Weight";
 
 
     public static final int NUM_INST_FOR_DISCRETIZATION = 300000;

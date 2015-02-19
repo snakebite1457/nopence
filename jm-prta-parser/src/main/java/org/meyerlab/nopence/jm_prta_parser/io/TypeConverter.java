@@ -313,6 +313,9 @@ public class TypeConverter {
         boolean nameAsPrefix = Boolean.parseBoolean(nodeAttrs.getNamedItem(
                 PrtaParserConstants.ATTR_INFO_ATTR_NODE_NAME_AS_PREFIX).getNodeValue());
 
+        double weight = Double.parseDouble(nodeAttrs.getNamedItem(
+                PrtaParserConstants.ATTR_INFO_ATTR_NODE_WEIGHT).getNodeValue());
+
         Map<Double, String> valueMap;
 
         Converter converter = null;
@@ -327,7 +330,7 @@ public class TypeConverter {
 
                 valueMap = getValues(attributeNode, true, ordinalOrder);
                 currentAttr = new OrdinalAttribute(id, name,
-                        valueMap, Attribute.Type.ordinal);
+                        valueMap, Attribute.Type.ordinal, weight);
 
                 converter = new OrdinalBinaryConverter(
                         (OrdinalAttribute) currentAttr, _intGenerator,
@@ -338,7 +341,7 @@ public class TypeConverter {
             case nominal:
                 valueMap = getValues(attributeNode, false, null);
                 currentAttr = new NominalAttribute(id, name,
-                        valueMap, Attribute.Type.nominal);
+                        valueMap, Attribute.Type.nominal, weight);
                 converter =
                         new NominalBinaryConverter(
                                 (NominalAttribute) currentAttr,
@@ -367,6 +370,9 @@ public class TypeConverter {
             boolean nameAsPrefix = Boolean.parseBoolean(continuousAttr.getAttributes().getNamedItem(
                     PrtaParserConstants.ATTR_INFO_ATTR_NODE_NAME_AS_PREFIX).getNodeValue());
 
+            double weight = Double.parseDouble(continuousAttr.getAttributes().getNamedItem(
+                    PrtaParserConstants.ATTR_INFO_ATTR_NODE_WEIGHT).getNodeValue());
+
             nameAsPrefixMapping.put(id, nameAsPrefix);
 
             Attribute.Type afterDisType =
@@ -387,7 +393,7 @@ public class TypeConverter {
             }
 
             numAttrList.add(new NumericAttribute(id, name,
-                    disType, numberOfBins, afterDisType));
+                    disType, numberOfBins, afterDisType, weight));
         }
 
         // Read out the numAttrList and create the discretization for all

@@ -36,8 +36,9 @@ public class NumericAttribute extends Attribute {
     public NumericAttribute(int id,
                             String name,
                             Discretization discretization,
-                            Type convertedType) {
-        super(id, name, convertedType);
+                            Type convertedType,
+                            double weight) {
+        super(id, name, convertedType, weight);
 
         _discretization = discretization;
     }
@@ -59,8 +60,9 @@ public class NumericAttribute extends Attribute {
                             String name,
                             DiscretizationType discretizationType,
                             int numDiscretizationBins,
-                            Type convertedType) {
-        super(id, name, convertedType);
+                            Type convertedType,
+                            double weight) {
+        super(id, name, convertedType, weight);
 
         _discretizationType = discretizationType;
         _numDiscretizationBins = numDiscretizationBins;

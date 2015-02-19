@@ -11,8 +11,9 @@ public class NominalAttribute extends Attribute {
     private Map<Double, String> _values;
 
     public NominalAttribute(int id, String name,
-                            Map<Double, String> values, Type convertedType) {
-        super(id, name, convertedType);
+                            Map<Double, String> values, Type convertedType,
+                            double weight) {
+        super(id, name, convertedType, weight);
 
         _values = new HashMap<>(values);
     }

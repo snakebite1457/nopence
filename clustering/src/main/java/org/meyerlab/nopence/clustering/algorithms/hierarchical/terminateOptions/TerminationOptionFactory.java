@@ -11,7 +11,7 @@ public class TerminationOptionFactory {
 
         switch (terminationClassName) {
             case "ClusterSizeTerminationOption":
-                return new ClusterSizeTerminateOption((Integer) terminationValue);
+                return new ClusterSizeTerminateOption((Double) terminationValue);
             case "MinDistanceTerminationOption":
                 return new MinDistanceTerminationOption((Double) terminationValue);
             default:
