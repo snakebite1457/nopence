@@ -213,18 +213,30 @@ public class DataParser {
         addsElement.appendChild(
                 document.createTextNode(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_ADDS_TEXT));
 
-        // Create ordinalId
         Attribute orgAttr = curConverter
                 .getOriginalAttrByConvertedAttrId(curConvertedAttr.getId());
 
-        int ordinalId = orgAttr.getConvertedType() == Attribute.Type.ordinal
-                ? orgAttr.getId()
-                : maxOriginalId + curConvertedAttr.getId();
+        // Create type
+        Element typeElement =
+                document.createElement("type");
+        typeElement.appendChild(
+                document.createTextNode(orgAttr.getConvertedType().name()));
 
-        Element ordinalIdElement =
+        // Create originalId
+        /*int ordinalId = orgAttr.getConvertedType() == Attribute.Type.ordinal
+                ? orgAttr.getId()
+                : maxOriginalId + curConvertedAttr.getId();*/
+
+        /*Element ordinalIdElement =
                 document.createElement(PrtaParserConstants.VAR_HIST_ELEMENT_LABEL_ORDINALID);
         ordinalIdElement.appendChild(
-                document.createTextNode(String.valueOf(ordinalId)));
+                document.createTextNode(String.valueOf(ordinalId)));*/
+
+        // Create originalId
+        Element ordinalIdElement =
+                document.createElement("originalAttrId");
+        ordinalIdElement.appendChild(
+                document.createTextNode(String.valueOf(orgAttr.getId())));
 
         // Create weight
         Element weightElement =
@@ -238,6 +250,7 @@ public class DataParser {
         varElement.appendChild(clusterElement);
         varElement.appendChild(addsElement);
         varElement.appendChild(ordinalIdElement);
+        varElement.appendChild(typeElement);
         varElement.appendChild(weightElement);
     }
 

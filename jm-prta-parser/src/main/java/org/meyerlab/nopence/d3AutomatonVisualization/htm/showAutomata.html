@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<head>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Justified Nav Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="../css/justified-nav.css" rel="stylesheet">
+
+    <link href="../css/dropdowns-enhancement.css" rel="stylesheet">
+
+    <link href="../css/bootstrap-slider.css" rel="stylesheet">
+</head>
+
+
+<body>
+
+<style>
+
+    .link {
+        fill: none;
+        stroke: #666;
+        stroke-width: 1.5px;
+    }
+
+    #licensing {
+        fill: black;
+    }
+
+    .link.licensing {
+        stroke: black;
+    }
+
+    .link.resolved {
+        stroke-dasharray: 0,2 1;
+    }
+
+    circle {
+        fill: #ccc;
+        stroke: #333;
+        stroke-width: 1.5px;
+    }
+
+    text {
+        font: 10px sans-serif;
+        pointer-events: none;
+        text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+    }
+
+    .D3tooltip{
+        background-color:rgba(68,136,187,0.5);;
+        margin: 10px;
+        padding-left: 10px;
+        padding-top: 10px;
+        -webkit-border-radius:10px;
+        -moz-border-radius:10px;
+        border-radius:10px;
+    }
+
+</style>
+
+<div class="container">
+
+    <div class="masthead">
+        <h3 class="text-muted">Job Market Automata</h3>
+        <nav>
+            <div class="btn-group">
+                <button data-toggle="dropdown" id="btnMarkAttributes"
+                        class="btn btn-default navbar-btn dropdown-toggle"
+                        disabled>Choose Attribute
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu" id="dropMarkAttributes">
+                    <li role="presentation"
+                        class="dropdown-header">Resize Nodes</li>
+                </ul>
+            </div>
+            <label style="margin-left: 10px">Hide Edges</label>
+            <input id="sliderProb" type="text"
+                   class="slider slider-horizontal"
+                   data-slider-min="-10"
+                   data-slider-max="10"
+                   data-slider-step="1"
+                   data-slider-orientation="horizontal"
+                   data-slider-selection="after" data-slider-tooltip="show">
+            <div class="btn-group pull-right">
+                <button data-toggle="dropdown" class="btn btn-default navbar-btn dropdown-toggle">Choose Automaton
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu" id="dropAutomatonFile">
+                    <li role="presentation"
+                        class="dropdown-header">Choose Automaton</li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Example row of columns -->
+    <div class="row">
+        <div id="showAutomata"></div>
+    </div>
+
+    <!-- Site footer -->
+    <footer class="footer">
+        <p>&copy; Company 2014</p>
+    </footer>
+
+</div> <!-- /container -->
+
+
+<script src="../js/lib/jquery-1.11.2.min.js"></script>
+<script src="../js/lib/bootstrap.min.js"></script>
+<script src="../js/lib/dropdowns-enhancement.js"></script>
+<script src="../js/lib/bootstrap-slider.js"></script>
+<script src="../js/lib/d3.min.js"></script>
+<script src="../js/automataMain.js"></script>
+</body>

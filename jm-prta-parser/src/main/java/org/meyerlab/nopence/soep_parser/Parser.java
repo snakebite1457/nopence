@@ -2,7 +2,6 @@ package org.meyerlab.nopence.soep_parser;
 
 import com.google.common.io.Files;
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
 import net.openhft.koloboke.collect.map.hash.HashIntObjMaps;
 import org.meyerlab.nopence.soep_parser.util.AttributeMap;
 import org.meyerlab.nopence.soep_parser.util.AttributeType;
