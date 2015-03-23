@@ -53,9 +53,9 @@ public class FixedCluster extends Cluster {
             }
         }
 
-        if (_seedStateId != seedId) {
-            System.out.println("Fixed cluster seed changed");
-        }
+        //if (_seedStateId != seedId) {
+        //    System.out.println("Fixed cluster seed changed");
+        //}
 
         _seedStateId = seedId;
     }

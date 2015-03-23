@@ -2,12 +2,9 @@ package org.meyerlab.nopence.gov_browser_parser;
 
 import org.apache.commons.cli.*;
 import org.meyerlab.nopence.gov_browser_parser.util.*;
-import org.meyerlab.nopence.jm_prta_parser.util.*;
-import org.meyerlab.nopence.utils.Helper;
 import org.meyerlab.nopence.utils.exceptions.DirNotValidException;
 import org.meyerlab.nopence.utils.exceptions.FileNotValidException;
 
-import java.io.File;
 import java.io.IOException;
 
 /**

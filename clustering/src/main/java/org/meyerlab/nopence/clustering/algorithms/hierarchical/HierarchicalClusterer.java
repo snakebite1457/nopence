@@ -12,6 +12,11 @@ import org.meyerlab.nopence.clustering.util.clustering.DistanceMatrix;
 import java.util.List;
 
 /**
+ * Hierarchical clustering algorithm.
+ *
+ * Provides different termination options. In addition, three common
+ * clustering methods are supported (single, complete and average linkage).
+ *
  * @author Dennis Meyer
  */
 public class HierarchicalClusterer implements IClusterer {
@@ -20,6 +25,12 @@ public class HierarchicalClusterer implements IClusterer {
     private final ITerminateOption _terminateOption;
     private final IClusteringMethod _clusteringMethod;
 
+
+    /**
+     * Creates a hierarchical clustering algorithm object.
+     * @param terminateOption A termination option
+     * @param clusteringMethod The type of the clustering method.
+     */
     public HierarchicalClusterer(ITerminateOption terminateOption,
                                  IClusteringMethod clusteringMethod) {
         _terminateOption = terminateOption;

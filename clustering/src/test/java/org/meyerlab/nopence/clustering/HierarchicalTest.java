@@ -36,17 +36,15 @@ public class HierarchicalTest extends TestCase {
 
             Stopwatch stopwatch = Stopwatch.createStarted();
 
-            DataStream dataStream = new DataStream("us-census.txt", 1200);
+            DataStream dataStream = new DataStream("us-census-little.csv", 1000);
 
-            IDistanceMeasure hammingDistance = new HammingDistance(
-                    dataStream.getDimInformation().copy());
+            IDistanceMeasure distanceMeasure =
+                    new HammingDistance(dataStream.getDimInformation().copy());
 
-            ITerminateOption terminateOption =
-                    new MinDistanceTerminationOption(9);
+            ITerminateOption terminateOption = new MinDistanceTerminationOption(9);
 
             IClusterer hierarchicalClusterer = new HierarchicalClusterer
                     (terminateOption, new SingleLinkageClusteringMethod());
-
 
             List<Point> points = new ArrayList<>();
 
@@ -55,7 +53,7 @@ public class HierarchicalTest extends TestCase {
                 points.add(new Point(dataStream.next().Values, counter));
             }
 
-            hierarchicalClusterer.buildClusterer(points, hammingDistance);
+            hierarchicalClusterer.buildClusterer(points, distanceMeasure);
 
             hierarchicalClusterer.start();
 
@@ -73,13 +71,13 @@ public class HierarchicalTest extends TestCase {
             System.out.println("Unique points: " + pointMap.size());
 
             IPerformanceMeasure performanceMeasure = new
-                    SilhouetteCoefficient(cluster, points, hammingDistance);
+                    SilhouetteCoefficient(cluster, points, distanceMeasure);
 
             double performance = performanceMeasure.estimatePerformance();
 
             System.out.println("Silhouette coeff: " + performance);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

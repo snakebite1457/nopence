@@ -8,7 +8,7 @@ import org.meyerlab.nopence.soep_parser.util.AttributeType;
 import org.meyerlab.nopence.soep_parser.util.SoepOption;
 import org.meyerlab.nopence.soep_parser.util.model.Attribute;
 import org.meyerlab.nopence.soep_parser.util.model.Instance;
-import org.meyerlab.nopence.util.CsvFileHelper;
+import org.meyerlab.nopence.util.CsvFileWriteHelper;
 import org.meyerlab.nopence.util.FileHelper;
 import org.meyerlab.nopence.utils.Constants;
 import org.meyerlab.nopence.utils.Helper;
@@ -125,7 +125,7 @@ public class Parser {
     }
 
     private static void writeHistories() {
-        CsvFileHelper csvFileHelper = new CsvFileHelper(5000, SoepOption.OutputFile);
+        CsvFileWriteHelper csvFileWriteHelper = new CsvFileWriteHelper(5000, SoepOption.OutputFile);
 
         StringBuilder header = new StringBuilder();
         header.append(_identifierVarName).append(",");
@@ -140,17 +140,17 @@ public class Parser {
             .forEach(key ->
                     header.append(_metaAttributeMap.get(key).getShortName()).append(","));
 
-        csvFileHelper.addHeader(header.toString());
+        csvFileWriteHelper.addHeader(header.toString());
 
         _histories
                 .forEach((personId, instances) -> {
                             Collections.sort(instances);
                             instances.forEach(inst ->
-                                    csvFileHelper.addInstance(inst.toString()));
+                                    csvFileWriteHelper.addInstance(inst.toString()));
                         });
 
 
-        csvFileHelper.emptyBuffer();
+        csvFileWriteHelper.emptyBuffer();
     }
 
     private static void generateMetaAttrMap() throws FileNotFoundException {

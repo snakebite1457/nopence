@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<head>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Justified Nav Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="../css/justified-nav.css" rel="stylesheet">
+
+    <link href="../css/dropdowns-enhancement.css" rel="stylesheet">
+
+    <link href="../css/bootstrap-slider.css" rel="stylesheet">
+
+    <link href="../css/dashboard.css" rel="stylesheet">
+
+    <link href="../css/d3Automaton.css" rel="stylesheet">
+
+    <link href="../css/d3BarChart.css" rel="stylesheet">
+</head>
+
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Job Market Automaton</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-5 col-md-3 sidebar">
+            <ul class="nav nav-list" id="navNodeDist">
+
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-5 col-md-9 col-md-offset-3 main">
+            <h1 class="page-header">Automaton Edit Functions</h1>
+            <div class="masthead">
+                <nav>
+                    <div class="btn-group">
+                        <button data-toggle="dropdown" id="btnMarkAttributes"
+                                class="btn btn-default navbar-btn dropdown-toggle"
+                                disabled>Choose Attribute
+                            <span class="caret"></span></button>
+                        <ul class="dropdown-menu" id="dropMarkAttributes">
+                            <li role="presentation"
+                                class="dropdown-header">Resize Nodes</li>
+                        </ul>
+                    </div>
+                    <label style="margin-left: 10px">Threshold</label>
+                    <input type="number" id="numThreshold" value="100" min="0" max="100">
+                    <label style="margin-left: 10px">Hide Edges</label>
+                    <input id="sliderProb" type="text"
+                           class="slider slider-horizontal"
+                           data-slider-min="-10"
+                           data-slider-max="10"
+                           data-slider-step="1"
+                           data-slider-orientation="horizontal"
+                           data-slider-selection="after" data-slider-tooltip="show">
+                    <div class="btn-group pull-right">
+                        <button data-toggle="dropdown" class="btn btn-default navbar-btn dropdown-toggle">Choose Automaton
+                            <span class="caret"></span></button>
+                        <ul class="dropdown-menu" id="dropAutomatonFile">
+                            <li role="presentation"
+                                class="dropdown-header">Choose Automaton</li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Example row of columns -->
+            <div class="row">
+                <div id="showAutomata"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Site footer -->
+<footer class="footer">
+    <p>&copy; Company 2014</p>
+</footer>
+
+
+<script src="../js/lib/jquery-1.11.2.min.js"></script>
+<script src="../js/lib/jquery-ui.min.js"></script>
+<script src="../js/lib/bootstrap.min.js"></script>
+<script src="../js/lib/dropdowns-enhancement.js"></script>
+<script src="../js/lib/bootstrap-slider.js"></script>
+<script src="../js/lib/d3.min.js"></script>
+<script src="../js/automataMain.js"></script>
+<script src="../js/barChartMain.js"></script>
+</body>

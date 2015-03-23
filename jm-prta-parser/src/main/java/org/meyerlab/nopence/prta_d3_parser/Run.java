@@ -9,6 +9,21 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 /**
+ * PRTA visualization parser.
+ *
+ * The PRTA visualization framework needs a JSON file, that contains all the
+ * information about the learned PRTA. This Parser transfers the PRTA output
+ * into a JSON File.
+ *
+ * There are different command line parameter required.
+ *
+ * The option 'v': The variables histogramm file.
+ *
+ * The option 'a': The output textFile (.txt), that was created by the PRTA.
+ *
+ * The option 'o': The output file.
+ *
+ *
  * @author Dennis Meyer
  */
 public class Run {

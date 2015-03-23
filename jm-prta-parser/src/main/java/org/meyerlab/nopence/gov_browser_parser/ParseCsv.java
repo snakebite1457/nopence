@@ -7,7 +7,7 @@ import net.sf.uadetector.OperatingSystem;
 import net.sf.uadetector.OperatingSystemFamily;
 import net.sf.uadetector.ReadableUserAgent;
 import org.meyerlab.nopence.gov_browser_parser.util.*;
-import org.meyerlab.nopence.util.CsvFileHelper;
+import org.meyerlab.nopence.util.CsvFileWriteHelper;
 import org.meyerlab.nopence.util.FileHelper;
 import org.meyerlab.nopence.utils.Constants;
 import org.meyerlab.nopence.utils.Helper;
@@ -36,9 +36,9 @@ public class ParseCsv {
         }
 
         FileHelper fileHelper = new FileHelper();
-        CsvFileHelper csvFileHelper = new CsvFileHelper(GovOption
+        CsvFileWriteHelper csvFileWriteHelper = new CsvFileWriteHelper(GovOption
                 .MaxBufferSize, GovOption.OutputFile);
-        csvFileHelper.addHeader(createOsHeader());
+        csvFileWriteHelper.addHeader(createOsHeader());
 
         try {
             for (File dataFile : dir.listFiles()) {
@@ -98,12 +98,12 @@ public class ParseCsv {
                     csvOsHistory.append(inst);
                 }
 
-                csvFileHelper.addInstance(csvOsHistory.toString());
+                csvFileWriteHelper.addInstance(csvOsHistory.toString());
             }
         } catch (FileNotValidException | IOException e) {
             e.printStackTrace();
         } finally {
-            csvFileHelper.emptyBuffer();
+            csvFileWriteHelper.emptyBuffer();
         }
     }
 

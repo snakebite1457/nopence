@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<attributes>
+    <attribute id="10" name="PSBIL" type="ordinal" nameAsPrefix="true"
+               weight="7.0">
+        <values>
+            <value number="-3" name="nicht valide" oPosition="0"/>
+            <value number="-2" name="trifft nicht zu" oPosition="1"/>
+            <value number="-1" name="keine Angabe" oPosition="2"/>
+            <value number="1" name="Hauptschulabschluss" oPosition="5"/>
+            <value number="2" name="Realschulabschluss" oPosition="7"/>
+            <value number="3" name="Fachhochschulreife" oPosition="8"/>
+            <value number="4" name="Abitur" oPosition="9"/>
+            <value number="5" name="Anderer Abschluss" oPosition="6"/>
+            <value number="6" name="Ohne Abschluss verlassen" oPosition="4"/>
+            <value number="7" name="In Schulausbildung" oPosition="3"/>
+        </values>
+    </attribute>
+
+    <attribute id="11" name="PBBIL01" type="nominal" nameAsPrefix="true" weight="1.0">
+        <values>
+            <value number="-3" name="nicht valide"/>
+            <value number="-2" name="trifft nicht zu"/>
+            <value number="-1" name="keine Angabe"/>
+            <value number="1" name="Lehre"/>
+            <value number="2" name="Berufsfachschule"/>
+            <value number="3" name="Schule Gesundheitswesen"/>
+            <value number="4" name="Fachschule"/>
+            <value number="5" name="Beamtenausbildung"/>
+            <value number="6" name="Sonstige Ausbildung"/>
+        </values>
+    </attribute>
+
+    <attribute id="12" name="PBBIL02" type="nominal" nameAsPrefix="true" weight="1.0">
+        <values>
+            <value number="-3" name="nicht valide"/>
+            <value number="-2" name="trifft nicht zu"/>
+            <value number="-1" name="keine Angabe"/>
+            <value number="1" name="Fachhochschule"/>
+            <value number="2" name="Universitaet, TH"/>
+            <value number="3" name="Hochschule im Ausland"/>
+        </values>
+    </attribute>
+
+    <attribute id="13" name="PBBIL03" type="nominal" nameAsPrefix="true" weight="1.0">
+        <values>
+            <value number="-3" name="nicht valide"/>
+            <value number="-2" name="trifft nicht zu"/>
+            <value number="-1" name="keine Angabe"/>
+            <value number="1" name="Kein Berufsabschluss"/>
+            <value number="2" name="Lehre"/>
+            <value number="3" name="Studium"/>
+        </values>
+    </attribute>
+
+    <attribute id="15" name="FAMSTD" type="nominal" nameAsPrefix="true" weight="1.0">
+        <values>
+            <value number="-3" name="nicht valide"/>
+            <value number="-2" name="trifft nicht zu"/>
+            <value number="-1" name="keine Angabe"/>
+            <value number="1" name="verheiratet zus."/>
+            <value number="2" name="verheiratet getr."/>
+            <value number="3" name="ledig"/>
+            <value number="4" name="geschieden"/>
+            <value number="5" name="verwitwet"/>
+            <value number="6" name="Ehepartner im Ausland"/>
+        </values>
+    </attribute>
+
+    <attribute id="16" name="BILZEIT" type="numeric"
+               afterDiscretizationType="ordinal"
+               discretizationType="EQUAL_FREQUENCY"
+               discretizationNumberBins="5"
+               ordinalOrder="normal"
+               nameAsPrefix="true"
+               weight="1.0" />
+
+    <attribute id="18" name="TATZEIT" type="numeric"
+               afterDiscretizationType="ordinal"
+               discretizationType="EQUAL_FREQUENCY"
+               discretizationNumberBins="10"
+               ordinalOrder="normal"
+               nameAsPrefix="true"
+               weight="1.0"/>
+
+    <attribute id="23" name="MPS" type="numeric"
+               afterDiscretizationType="ordinal"
+               discretizationType="EQUAL_FREQUENCY"
+               discretizationNumberBins="10"
+               ordinalOrder="normal"
+               nameAsPrefix="true"
+               weight="1.0" />
+
+    <attribute id="30" name="LABGRO" type="numeric"
+               afterDiscretizationType="ordinal"
+               discretizationType="EQUAL_FREQUENCY"
+               discretizationNumberBins="10"
+               ordinalOrder="normal"
+               nameAsPrefix="true"
+               weight="3.0"/>
+
+
+    <attribute id="32" name="EMPLST" type="nominal" nameAsPrefix="true" weight="1.0">
+        <values>
+            <value number="-3" name="nicht valide"/>
+            <value number="-2" name="trifft nicht zu"/>
+            <value number="-1" name="keine Angabe"/>
+            <value number="1" name="Voll erwerbstaetig"/>
+            <value number="2" name="Teilzeitbeschäftigung"/>
+            <value number="3" name="Ausbildung, Lehre"/>
+            <value number="4" name="Unregelmaessig, geringfuegig erwerbstaet."/>
+            <value number="5" name="Nicht erwerbstaetig"/>
+            <value number="6" name="Werstatt fuer behinderte Menschen"/>
+        </values>
+    </attribute>
+
+    <attribute id="33" name="EXPFT" type="numeric"
+               afterDiscretizationType="ordinal"
+               discretizationType="EQUAL_FREQUENCY"
+               discretizationNumberBins="15"
+               ordinalOrder="normal"
+               nameAsPrefix="true"
+               weight="1.0"/>
+
+
+
+</attributes>

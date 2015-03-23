@@ -1,0 +1,27 @@
+.link {
+        fill: none;
+        stroke: black;
+        stroke-width: 1.5px;
+}
+
+circle.automaton {
+    fill: #ccc;
+    stroke: #333;
+    stroke-width: 1.5px;
+}
+
+text.automaton {
+    font: 10px sans-serif;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+.D3tooltip{
+    background-color:rgba(68,136,187,0.5);;
+    margin: 10px;
+    padding-left: 10px;
+    padding-top: 10px;
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+}

@@ -5,5 +5,5 @@ package org.meyerlab.nopence.clustering.algorithms.measures.performance;
  */
 public interface IPerformanceMeasure {
 
-    public double estimatePerformance();
+    public double estimatePerformance() throws Exception;
 }

@@ -4,6 +4,7 @@ import com.google.common.primitives.Ints;
 import com.google.gson.Gson;
 import org.meyerlab.nopence.prta_d3_parser.Model.*;
 import org.meyerlab.nopence.util.FileHelper;
+import org.meyerlab.nopence.util.ReadAutomatonFileHelper;
 import org.meyerlab.nopence.utils.Helper;
 import org.meyerlab.nopence.utils.exceptions.FileNotValidException;
 import org.w3c.dom.Document;
@@ -57,7 +58,15 @@ public class Parser {
     private void buildJsonFile() throws IOException, FileNotValidException {
         _automataObject = new JsonAutomataObject();
         _automataObject.setAttributes(getJsonAttributes());
-        readAutomatonOutput();
+
+        ReadAutomatonFileHelper automatonFileHelper = new
+                ReadAutomatonFileHelper(D3ParserOption.AutomataFilePath);
+
+        List<JsonEdge> jsonEdges = automatonFileHelper.getEdges();
+        List<JsonNode> jsonNodes = automatonFileHelper.getNodes();
+
+        _automataObject.setNodes(jsonNodes.toArray(new JsonNode[jsonNodes.size()]));
+        _automataObject.setEdges(jsonEdges.toArray(new JsonEdge[jsonEdges.size()]));
 
         Gson gson = new Gson();
         Writer writer = null;
@@ -77,93 +86,6 @@ public class Parser {
                 }
             } catch (Exception ignored) {}
         }
-    }
-
-    private void readAutomatonOutput() throws IOException, FileNotValidException {
-        FileHelper fileHelper = new FileHelper(new File(D3ParserOption.AutomataFilePath), false);
-
-        // Skip first to lines
-        fileHelper.nextLine();
-        fileHelper.nextLine();
-
-        List<JsonNode> jsonNodes = new ArrayList<>();
-        List<JsonEdge> jsonEdges = new ArrayList<>();
-
-        String line = fileHelper.nextLine();
-        while (!line.equals("") || line.equals("edges")) {
-            // Read Nodes
-            jsonNodes.add(getNodeFromLine(line));
-            line = fileHelper.nextLine();
-        }
-
-        line = fileHelper.nextLine();
-
-        while (!line.equals("")) {
-            // Read Edges
-            jsonEdges.add(getEdgeFromLine(line));
-
-            if (!fileHelper.hasNextLine()) {
-                break;
-            }
-            line = fileHelper.nextLine();
-        }
-
-        _automataObject.setEdges(jsonEdges.toArray(new JsonEdge[jsonEdges.size()]));
-        _automataObject.setNodes(jsonNodes.toArray(new JsonNode[jsonNodes.size()]));
-    }
-
-    private JsonEdge getEdgeFromLine(String line) {
-        if (!line.contains("Edge")) {
-            return null;
-        }
-
-        JsonEdge jsonEdge = new JsonEdge();
-
-        int closeNodeIdTag = line.indexOf("]", 2);
-        String id = line.substring(6, closeNodeIdTag);
-        jsonEdge.Id = Integer.parseInt(id);
-
-        int pathIndex = line.indexOf("(");
-        int pathIndexEnd = line.indexOf(")", pathIndex);
-        String[] path = line.substring(pathIndex + 1, pathIndexEnd).split(",");
-        jsonEdge.Source = Integer.parseInt(path[0]);
-        jsonEdge.Target = Integer.parseInt(path[1]);
-
-        int tdsIndex = line.indexOf(":",pathIndexEnd);
-        int tdsIndexEnd = line.indexOf("[", tdsIndex);
-        jsonEdge.Tds = Integer.parseInt(line.substring(tdsIndex + 1, tdsIndexEnd));
-
-        return jsonEdge;
-    }
-
-    private JsonNode getNodeFromLine(String line) {
-        if (!line.contains("node")) {
-            return null;
-        }
-
-        JsonNode jsonNode = new JsonNode();
-
-        int closeNodeIdTag = line.indexOf("]", 2);
-        String id = line.substring(6, closeNodeIdTag);
-        jsonNode.Id = Integer.parseInt(id);
-
-        int infIndex = line.indexOf("[", closeNodeIdTag);
-        String arr = line.substring(infIndex).replace(":1.0", "").replace
-                ("[", "").replace("]", "");
-
-
-        String[] attributes = arr.split(" ");
-
-        List<Integer> attrIds = new ArrayList<>();
-        for (int i = 0; i < attributes.length; i++) {
-            Integer attrId = Ints.tryParse(attributes[i]);
-            if (attrId != null) {
-                attrIds.add(attrId);
-            }
-        }
-
-        jsonNode.Attributes = Ints.toArray(attrIds);
-        return jsonNode;
     }
 
     private void readVarHist() throws IOException, SAXException {

@@ -32,37 +32,21 @@ public class SilhouetteCoefficient implements IPerformanceMeasure {
         _secondClusterSeed = HashLongObjMaps.newMutableMap();
     }
 
+    /**
+     * Calculates the silhouette coefficient for the current clustering.
+     * @return The silhouette coefficient
+     * @throws Exception
+     */
     @Override
-    public double estimatePerformance() {
+    public double estimatePerformance() throws Exception {
+
+        if (_clusters.size() < 1) {
+            throw new Exception("No cluster available!");
+        }
 
         if (_clusters.size() == 1) {
             return 1;
         }
-
-        /*List<ReassignWorker> worker = new ArrayList<>();
-
-        CountDownLatch doneSignal = new CountDownLatch(_clusters.size());
-
-        _clusters.values()
-                .stream()
-                .forEach(cluster -> {
-                    ReassignWorker reassignWorker = new ReassignWorker
-                            (doneSignal, cluster, _distanceMeasure.copy());
-
-                    worker.add(reassignWorker);
-                });
-
-        ExecutorService executor = Executors.newCachedThreadPool();
-        worker
-                .stream()
-                .forEach(executor::submit);
-
-        try {
-            doneSignal.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-
         estimateSecondNearestClusterSeed();
 
         double value = 0;

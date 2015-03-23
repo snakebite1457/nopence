@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment></comment>
+    <entry key="columnPersonId">0</entry>
+    <entry key="columnObservationDate">1</entry>
+    <entry key="dateFormat">dd.MM.yyyy</entry>
+</properties>

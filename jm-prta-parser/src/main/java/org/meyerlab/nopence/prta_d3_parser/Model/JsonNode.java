@@ -6,5 +6,6 @@ package org.meyerlab.nopence.prta_d3_parser.Model;
 public class JsonNode {
 
     public int Id;
-    public int[] Attributes;
+    public JsonNodeAttribute[] Attributes;
+    public int NumInstances;
 }

@@ -8,11 +8,30 @@ import org.meyerlab.nopence.utils.exceptions.FileNotValidException;
 import java.io.IOException;
 
 /**
+ * Parser for the German Socio-Economic Panel (SOEP) data. Makes it possible
+ * to find and combine all observations for one person from different files
+ * into one file. The observations are now ordered by the person/object id.
+ *
+ * There are different command line parameters required.
+ *
+ * The option 'i': The directory, that contains the observation files.
+ *
+ * The option 'f': The output file (csv-format).
+ *
+ * The option 'p': All the observation file must have the same postfix. This
+ * postfix must be specified here.
+ *
+ * The option 'm': For the SOEP data more information is required. Look at
+ * the file 'meta-pgen'. If not needed feel free to change it.
+ *
+ *
  * @author Dennis Meyer
  */
 public class Run {
 
     public static void main(String[] args) {
+
+        System.out.println("Parser process has been started!\n");
 
         try {
             readCLI(args);

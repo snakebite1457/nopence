@@ -79,7 +79,6 @@ public class APreFixedWorker extends APreWorker
 
         APreCallbackEvent event = null;
         if (_inputEvent.reassignClusterSeeds) {
-            System.out.println("Cluster seeds gets rearranged");
             reassignClusterSeed();
         } else {
             event = calculateMinDistance(_inputEvent.Point);

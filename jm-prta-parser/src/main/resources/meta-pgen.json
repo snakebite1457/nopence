@@ -1,0 +1,173 @@
+{
+  "identifier": "PERSNR",
+  "monthObservationVar": {
+    "short": "MONTH",
+    "type": "YEAR"
+  },
+  "vars": [
+    {
+      "short": "ERWTYP",
+      "type": "YEAR"
+    },
+    {
+      "short": "ERLJOB",
+      "type": "YEAR"
+    },
+    {
+      "short": "BETR",
+      "type": "YEAR"
+    },
+    {
+      "short": "OEFFD",
+      "type": "YEAR"
+    },
+    {
+      "short": "AUSB",
+      "type": "YEAR"
+    },
+    {
+      "short": "PARTZ",
+      "type": "YEAR"
+    },
+    {
+      "short": "PARTNR",
+      "type": "YEAR"
+    },
+    {
+      "short": "NATION",
+      "type": "YEAR"
+    },
+    {
+      "short": "PSBIL",
+      "type": "LETTER"
+    },
+    {
+      "short": "PBBIL01",
+      "type": "LETTER"
+    },
+    {
+      "short": "PBBIL02",
+      "type": "LETTER"
+    },
+    {
+      "short": "PBBIL03",
+      "type": "LETTER"
+    },
+    {
+      "short": "PSBILA",
+      "type": "LETTER"
+    },
+    {
+      "short": "FAMSTD",
+      "type": "LETTER"
+    },
+    {
+      "short": "BILZEIT",
+      "type": "LETTER"
+    },
+    {
+      "short": "ERWZEIT",
+      "type": "LETTER"
+    },
+    {
+      "short": "TATZEIT",
+      "type": "LETTER"
+    },
+    {
+      "short": "VEBZEIT",
+      "type": "LETTER"
+    },
+    {
+      "short": "UEBSTD",
+      "type": "LETTER"
+    },
+    {
+      "short": "IS88",
+      "type": "YEAR"
+    },
+    {
+      "short": "NACE",
+      "type": "YEAR"
+    },
+    {
+      "short": "MPS",
+      "type": "YEAR"
+    },
+    {
+      "short": "AUTONO",
+      "type": "YEAR"
+    },
+    {
+      "short": "ISCED",
+      "type": "YEAR"
+    },
+    {
+      "short": "STIB",
+      "type": "YEAR"
+    },
+    {
+      "short": "MONTH",
+      "type": "YEAR"
+    },
+    {
+      "short": "LABNET",
+      "type": "YEAR"
+    },
+    {
+      "short": "IMPNET",
+      "type": "YEAR"
+    },
+    {
+      "short": "LABGRO",
+      "type": "YEAR"
+    },
+    {
+      "short": "IMPGRO",
+      "type": "YEAR"
+    },
+    {
+      "short": "EMPLST",
+      "type": "YEAR"
+    },
+    {
+      "short": "EXPFT",
+      "type": "YEAR"
+    },
+    {
+      "short": "EXPPT",
+      "type": "YEAR"
+    },
+    {
+      "short": "EXPUE",
+      "type": "YEAR"
+    },
+    {
+      "short": "JOBCH",
+      "type": "YEAR"
+    },
+    {
+      "short": "FIELD",
+      "type": "YEAR"
+    },
+    {
+      "short": "DEGREE",
+      "type": "YEAR"
+    },
+    {
+      "short": "TRAINA",
+      "type": "YEAR"
+    },
+    {
+      "short": "TRAINB",
+      "type": "YEAR"
+    },
+    {
+      "short": "TRAINC",
+      "type": "YEAR"
+    },
+    {
+      "short": "TRAIND",
+      "type": "YEAR"
+    }
+  ]
+}

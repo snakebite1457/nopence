@@ -18,6 +18,14 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
+ * Multithreaded Dynamic Seed-based Clustering (DySC) clustering algorithmus.
+ *
+ * The DySC clustering algorithm is based on a greedy clustering approach
+ * which uses a dynamic seeding strategy.
+ *
+ * This implementation allows the DySC to run in multiple Thread. This
+ * increases the runtime, especially with a low epsilon range.
+ *
  * @author Dennis Meyer
  */
 public class Dysc implements IClusterer {
@@ -35,6 +43,22 @@ public class Dysc implements IClusterer {
     private int _maxPendingClusterSize;
     private ExecutorService _executorService;
 
+
+    /**
+     * Creates a new multithreaded DySC clustering algorithmus object. Both
+     * {@code maxClustersInWorker} and {@code maxPointsInWorker} will be
+     * optimized after the first fixed cluster has been created.
+     * @param epsilonSeedRange The epsilon range
+     * @param maxPendingClusterSize Maximum points in pending cluster. If
+     *                              this limit is reached the cluster will be
+     *                              converted.
+     * @param maxClustersInWorker Maximum cluster in one thread
+     * @param maxPointsInWorker Maximum points in one thread
+     * @param reassignClusterSeedsAfterFinished True if you want to
+     *                                          automatically reassign the
+     *                                          cluster seed after the DySC
+     *                                          is ready.
+     */
     public Dysc(double epsilonSeedRange,
                 int maxPendingClusterSize,
                 int maxClustersInWorker,
@@ -170,6 +194,9 @@ public class Dysc implements IClusterer {
     }
 
     private boolean runFixedWorkerReassignClusterSeeds() {
+
+        System.out.println("Cluster seeds gets rearranged");
+
         CountDownLatch doneSignal = new CountDownLatch(_fixedWorkers.size());
 
         for (APreFixedWorker worker : _fixedWorkers.values()) {
